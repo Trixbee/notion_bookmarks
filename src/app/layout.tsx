@@ -31,6 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: config.SITE_DESCRIPTION || "Ezho工具箱，超级个体需要知道的各种好用工具",
     keywords: config.SITE_KEYWORDS?.split(',') || ["AI导航", "超级个体", "工具箱"],
+    icons: {
+      icon: '/favicon.ico',
+    },
     openGraph: {
       type: 'website',
       locale: 'zh_CN',
