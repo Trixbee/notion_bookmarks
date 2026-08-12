@@ -12,14 +12,19 @@
 
 /* 深色主题基础样式 */
 [data-theme="simple-dark"] {
-  background-color: hsl(222.2 84% 4.9%);
-  color: hsl(210 40% 98%);
+  background-color: hsl(0 0% 7%);
+  color: hsl(0 0% 92%);
   font-family: 'Noto Sans SC', var(--font-family);
-  transition: all 0.2s ease-out;
+
   border-radius: var(--radius);
   box-shadow: none;
   border: var(--border-width) var(--border-style) var(--border);
-  transition: box-shadow 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1);
+
+  transition:
+    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
   overflow: hidden;
 }
 
@@ -63,13 +68,10 @@
   border-color: var(--border);
 }
 
-/* 确保导航中的文字颜色正确 */
-/* Removed: [data-theme^="simple"] nav span, [data-theme^="simple"] nav button { color: var(--foreground); } */
-
 /* 导航按钮激活状态 */
 [data-theme="simple-dark"] nav button.bg-primary {
   background-color: var(--primary);
-  color: var(--primary-foreground) !important; /* Ensure dark text color for simple-dark active button */
+  color: var(--primary-foreground) !important;
 }
 
 /* 导航按钮悬浮效果 */
@@ -77,10 +79,15 @@
   background-color: var(--muted);
 }
 
-/* Add explicit color for simple-dark mobile nav text */
+/* 深色主题导航文字 */
 [data-theme="simple-dark"] nav span,
 [data-theme="simple-dark"] nav button {
-  color: hsl(210 40% 98%) !important; /* Use a clear white */
+  color: hsl(0 0% 92%) !important;
+}
+
+/* 深色主题激活按钮文字需要保持深色 */
+[data-theme="simple-dark"] nav button.bg-primary {
+  color: hsl(0 0% 8%) !important;
 }
 
 /* 组件样式 */
@@ -90,15 +97,13 @@
   border-radius: var(--radius);
   border: var(--border-width) var(--border-style) var(--border);
   box-shadow: var(--shadow-sm);
-  /* transition: all var(--transition-duration) var(--transition-timing); */
 }
 
 [data-theme^="simple"] .widget-card:hover {
   box-shadow: var(--shadow-hover);
-  /* 移除transform，防止抖动 */
-  /* transform: translateY(-1px); */
 }
 
+/* 平台切换标签 */
 [data-theme^="simple"] .platform-tab {
   background: transparent;
   color: var(--muted-foreground);
@@ -116,6 +121,7 @@
   font-weight: var(--font-weight-medium);
 }
 
+/* 热榜组件 */
 [data-theme^="simple"] .hot-news-item {
   background-color: var(--card);
   color: var(--card-foreground);
@@ -151,6 +157,19 @@
 
 [data-theme^="simple"] .hot-news-icon {
   color: var(--muted-foreground);
+}
+
+/* 深色主题下进一步统一为中性灰阶 */
+[data-theme="simple-dark"] .widget-card,
+[data-theme="simple-dark"] .hot-news-item {
+  background-color: var(--card);
+  border-color: var(--border);
+}
+
+[data-theme="simple-dark"] .widget-card:hover,
+[data-theme="simple-dark"] .hot-news-item:hover {
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 /* 如果需要覆盖某些默认样式，可以在这里添加 */
