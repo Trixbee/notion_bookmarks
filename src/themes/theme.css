@@ -43,35 +43,44 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-/* 简约深色主题 */
+/* 简约深色主题 - 中性黑灰配色 */
 [data-theme="simple-dark"] {
-  --background: hsl(222.2 84% 4.9%);
-  --foreground: hsl(210 40% 98%);
+  /* 页面主背景 #121212 */
+  --background: hsl(0 0% 7%);
+  --foreground: hsl(0 0% 92%);
   
-  --muted: hsl(217.2 32.6% 17.5%);
-  --muted-foreground: hsl(215 20.2% 65.1%);
+  /* 次级区域 #242424 */
+  --muted: hsl(0 0% 14%);
+  --muted-foreground: hsl(0 0% 62%);
   
-  --popover: hsl(222.2 84% 4.9%);
-  --popover-foreground: hsl(210 40% 98%);
+  /* 弹出层 #1A1A1A */
+  --popover: hsl(0 0% 10%);
+  --popover-foreground: hsl(0 0% 92%);
   
-  --card: hsl(222.2 84% 4.9%);
-  --card-foreground: hsl(210 40% 98%);
+  /* 卡片 #1A1A1A */
+  --card: hsl(0 0% 10%);
+  --card-foreground: hsl(0 0% 92%);
   
-  --border: hsl(217.2 32.6% 17.5%);
-  --input: hsl(217.2 32.6% 17.5%);
+  /* 边框 #2E2E2E */
+  --border: hsl(0 0% 18%);
+  --input: hsl(0 0% 18%);
   
-  --primary: hsl(210 40% 98%);
-  --primary-foreground: hsl(222.2 47.4% 11.2%);
+  /* 主要按钮 */
+  --primary: hsl(0 0% 92%);
+  --primary-foreground: hsl(0 0% 8%);
   
-  --secondary: hsl(217.2 32.6% 17.5%);
-  --secondary-foreground: hsl(210 40% 98%);
+  /* 次级按钮/区域 */
+  --secondary: hsl(0 0% 14%);
+  --secondary-foreground: hsl(0 0% 92%);
   
-  --accent: hsl(217.2 32.6% 17.5%);
-  --accent-foreground: hsl(210 40% 98%);
+  /* Hover #292929 */
+  --accent: hsl(0 0% 16%);
+  --accent-foreground: hsl(0 0% 95%);
   
-  --shadow-sm: 0 1px 2px 0 rgb(255 255 255 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(255 255 255 / 0.1), 0 2px 4px -2px rgb(255 255 255 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(255 255 255 / 0.1), 0 4px 6px -4px rgb(255 255 255 / 0.1);
+  /* 中性黑色阴影 */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.24);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.28), 0 2px 4px -2px rgb(0 0 0 / 0.18);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.32), 0 4px 6px -4px rgb(0 0 0 / 0.22);
 }
 
 /* 赛博朋克主题 */
