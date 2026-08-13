@@ -93,7 +93,7 @@ const Navigation = memo(function Navigation({
     [handleNavClick, toggleCategory]
   )
 
-  // Set default active category on mount
+  // 设置默认激活分类
   useEffect(() => {
     if (categories.length > 0 && activeCategory === '') {
       setActiveCategory(categories[0].id)
@@ -102,7 +102,9 @@ const Navigation = memo(function Navigation({
 
   return (
     <>
-      {/* 移动端顶部导航 */}
+      {/* =========================
+          移动端顶部导航
+      ========================== */}
       <nav className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-background border-b">
         <div className="flex items-center justify-between px-4 h-16">
           <div className="flex items-center space-x-2">
@@ -111,6 +113,7 @@ const Navigation = memo(function Navigation({
               alt="Logo"
               className="w-6 h-6 object-contain"
             />
+
             <span className="neon-title">{config.SITE_TITLE}</span>
           </div>
 
@@ -131,14 +134,22 @@ const Navigation = memo(function Navigation({
                     onClick={() => handleNavClick(category.id)}
                     className={cn(
                       'mobile-nav-category-button whitespace-nowrap px-3 py-1.5 text-sm rounded-full transition-colors shrink-0',
+
                       isMobileCategoryActive
                         ? theme === 'bauhaus-primary'
                           ? 'mobile-nav-category-active font-medium'
+
                           : theme === 'simple-dark'
                           ? 'mobile-nav-category-active bg-accent text-foreground font-medium'
+
+                          : theme === 'simple-light'
+                          ? 'mobile-nav-category-active bg-neutral-900 text-white font-medium'
+
                           : 'mobile-nav-category-active bg-primary text-white font-medium'
+
                         : theme === 'simple-dark'
                         ? 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent'
+
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     )}
                   >
@@ -151,7 +162,9 @@ const Navigation = memo(function Navigation({
         </div>
       </nav>
 
-      {/* 桌面端边导航 */}
+      {/* =========================
+          桌面端侧边导航
+      ========================== */}
       <nav className="hidden lg:block w-[280px] flex-shrink-0 h-screen sticky top-0 p-4 overflow-y-auto border-r">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
@@ -160,6 +173,7 @@ const Navigation = memo(function Navigation({
               alt="Logo"
               className="w-6 h-6 object-contain"
             />
+
             <span className="neon-title">{config.SITE_TITLE}</span>
           </div>
 
@@ -184,22 +198,31 @@ const Navigation = memo(function Navigation({
             return (
               <li key={category.id}>
                 <div className="flex flex-col">
+
+                  {/* 一级分类 */}
                   <button
                     onClick={() => handleCategoryToggle(category.id)}
                     className={cn(
                       'nav-category-button w-full flex items-center justify-between px-4 py-2 rounded-lg transition-colors',
+
                       isCategoryActive
                         ? theme === 'simple-dark'
                           ? 'nav-category-active bg-accent text-foreground font-medium'
+
+                          : theme === 'simple-light'
+                          ? 'nav-category-active bg-neutral-900 text-white font-medium'
+
                           : 'nav-category-active bg-primary text-white font-medium'
+
                         : isCategoryExpanded
                         ? 'nav-category-expanded bg-accent'
+
                         : 'hover:bg-accent/50'
                     )}
                   >
                     <div className="flex items-center space-x-2">
-                      {/* IconComponent type mismatch handled */}
                       <IconComponent className="w-4 h-4" />
+
                       <span>{category.name}</span>
                     </div>
 
@@ -213,21 +236,32 @@ const Navigation = memo(function Navigation({
                     />
                   </button>
 
+                  {/* 二级分类 */}
                   {isCategoryExpanded && (
                     <ul className="mt-1 ml-4 space-y-1">
                       {category.subCategories.map(subCategory => (
                         <li key={subCategory.id}>
                           <button
                             onClick={() =>
-                              handleNavClick(category.id, subCategory.id)
+                              handleNavClick(
+                                category.id,
+                                subCategory.id
+                              )
                             }
                             className={cn(
                               'nav-subcategory-button w-full text-left px-4 py-2 rounded-lg transition-colors text-sm',
+
                               activeCategory ===
                                 `${category.id}-${subCategory.id}`
+
                                 ? theme === 'simple-dark'
                                   ? 'nav-subcategory-active bg-accent text-foreground font-medium'
+
+                                  : theme === 'simple-light'
+                                  ? 'nav-subcategory-active bg-neutral-900 text-white font-medium'
+
                                   : 'nav-subcategory-active bg-primary text-white font-medium'
+
                                 : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                             )}
                           >
