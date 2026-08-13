@@ -9,8 +9,8 @@ export const simpleTheme: ThemeConfig = {
   styles: {
     light: {
       // 基础颜色
-      primary: 'hsl(222.2 47.4% 11.2%)',
-      'primary-foreground': 'hsl(210 40% 98%)',
+      primary: 'hsl(0 0% 12%)',
+      'primary-foreground': 'hsl(0 0% 98%)',
       background: 'hsl(0 0% 100%)',
       'background-foreground': 'hsl(222.2 47.4% 11.2%)',
       muted: 'hsl(210 40% 96.1%)',
