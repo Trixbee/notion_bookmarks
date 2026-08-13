@@ -109,7 +109,7 @@ const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
               Built with Next.js and Notion
             </p>
             <p className="text-sm text-muted-foreground">
-              2024 {config.SITE_AUTHOR}. All rights reserved.
+              2026 {config.SITE_AUTHOR}. All rights reserved.
             </p>
           </div>
         </div>
