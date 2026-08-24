@@ -114,8 +114,7 @@ html, body {
   }
 }
 
-/* Simple Dark 桌面侧栏滚动条：
-   保持紧凑、低存在感的几何尺寸；hover 仅采用 YouTube 截图中的 #9e9e9e 亮度。 */
+/* Simple Dark 桌面侧栏滚动条：保持紧凑低调，鼠标移到滑块上时仅轻微提亮。 */
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
   scrollbar-width: thin;
@@ -143,7 +142,7 @@ html, body {
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #9e9e9e;
+  background: rgba(255, 255, 255, 0.18);
   border: 1px solid transparent;
   background-clip: padding-box;
 }
