@@ -197,6 +197,117 @@ html, body {
   background-clip: padding-box;
 }
 
+/* Cyberpunk：保留统一尺寸，用低透明主题紫体现霓虹感，但不额外发光。 */
+[data-theme="cyberpunk-dark"] .desktop-sidebar {
+  color-scheme: dark;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="cyberpunk-dark"] .desktop-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(222, 87, 255, 0.32) transparent;
+  }
+}
+
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-track,
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-track-piece,
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: rgba(222, 87, 255, 0.22);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(222, 87, 255, 0.48);
+  background-clip: padding-box;
+}
+
+/* Bauhaus：保持统一结构，使用克制的黑灰，避免和三原色主体争夺注意力。 */
+[data-theme="bauhaus-primary"] .desktop-sidebar {
+  color-scheme: light;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="bauhaus-primary"] .desktop-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(13, 13, 13, 0.30) transparent;
+  }
+}
+
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-track,
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-track-piece,
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: rgba(13, 13, 13, 0.22);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 13, 13, 0.55);
+  background-clip: padding-box;
+}
+
+/* Macintosh 1984：黑灰配色，并使用直角滑块呼应经典 GUI 的硬朗几何感。 */
+[data-theme="macintosh-1984"] .desktop-sidebar {
+  color-scheme: light;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="macintosh-1984"] .desktop-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(20, 20, 20, 0.36) transparent;
+  }
+}
+
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-track,
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-track-piece,
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: rgba(20, 20, 20, 0.28);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 0;
+}
+
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 20, 20, 0.58);
+  background-clip: padding-box;
+}
+
 /* QWeather Icons */
 @font-face {
   font-family: 'qweather-icons';
