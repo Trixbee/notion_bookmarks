@@ -114,16 +114,13 @@ html, body {
   }
 }
 
-/* Simple Dark 桌面侧栏滚动条：恢复此前确认舒服的默认视觉，保留当前正确的 hover 颜色。 */
+/* Simple Dark 桌面侧栏滚动条。
+   放在 globals.css 是因为该文件由 RootLayout 确定加载；
+   主题专属的 simple/style.css 当前并未进入实际页面样式依赖链。 */
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
   scrollbar-width: thin;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="simple-dark"] .desktop-sidebar {
-    scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
-  }
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
@@ -148,7 +145,6 @@ html, body {
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
   background: #9e9e9e;
-  border: 1px solid transparent;
   background-clip: padding-box;
 }
 
