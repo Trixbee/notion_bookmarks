@@ -114,11 +114,18 @@ html, body {
   }
 }
 
-/* Simple Dark 桌面侧栏滚动条：保持现有默认样式，仅匹配 YouTube 的 hover 亮度。 */
+/* Simple Dark 桌面侧栏滚动条：
+   Chromium/Safari 使用 WebKit 滚动条样式；Firefox 单独兜底。
+   避免 scrollbar-color 覆盖 ::-webkit-scrollbar-thumb:hover。 */
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="simple-dark"] .desktop-sidebar {
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
