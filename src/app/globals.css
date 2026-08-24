@@ -129,8 +129,8 @@ html, body {
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   background: transparent;
 }
 
