@@ -120,7 +120,7 @@ html, body {
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
@@ -144,7 +144,7 @@ html, body {
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.20);
   background-clip: padding-box;
 }
 
