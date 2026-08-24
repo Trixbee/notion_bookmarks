@@ -115,12 +115,17 @@ html, body {
 }
 
 /* Simple Dark 桌面侧栏滚动条。
-   放在 globals.css 是因为该文件由 RootLayout 确定加载；
-   主题专属的 simple/style.css 当前并未进入实际页面样式依赖链。 */
+   Chromium/Safari 保持现有 WebKit 尺寸与默认视觉；
+   Firefox 单独使用标准 scrollbar 属性，避免干扰 Chrome 的 hover。 */
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="simple-dark"] .desktop-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
