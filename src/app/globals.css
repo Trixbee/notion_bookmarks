@@ -114,13 +114,17 @@ html, body {
   }
 }
 
-/* Simple Dark 桌面侧栏滚动条。
-   放在 globals.css 是因为该文件由 RootLayout 确定加载；
-   主题专属的 simple/style.css 当前并未进入实际页面样式依赖链。 */
+/* Simple Dark 桌面侧栏滚动条：参考 YouTube 暗色模式。
+   Chromium/Safari 使用明确的 WebKit 样式，避免 scrollbar-color
+   接管后由浏览器自行增强 hover 亮度。 */
 [data-theme="simple-dark"] .desktop-sidebar {
-  color-scheme: dark;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="simple-dark"] .desktop-sidebar {
+    scrollbar-color: #606060 transparent;
+  }
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
@@ -137,14 +141,14 @@ html, body {
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
   min-height: 36px;
-  background: rgba(255, 255, 255, 0.14);
+  background-color: #606060;
   border: 1px solid transparent;
   background-clip: padding-box;
   border-radius: 999px;
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background-color: #717171;
   background-clip: padding-box;
 }
 
