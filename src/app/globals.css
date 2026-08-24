@@ -114,6 +114,40 @@ html, body {
   }
 }
 
+/* Simple Dark 桌面侧栏滚动条。
+   放在 globals.css 是因为该文件由 RootLayout 确定加载；
+   主题专属的 simple/style.css 当前并未进入实际页面样式依赖链。 */
+[data-theme="simple-dark"] .desktop-sidebar {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-track,
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-track-piece,
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+  background-clip: padding-box;
+}
+
 /* QWeather Icons */
 @font-face {
   font-family: 'qweather-icons';
