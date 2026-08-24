@@ -114,6 +114,12 @@ html, body {
   }
 }
 
+/* Simple Light 页脚：显式使用主题背景，避免固定页脚出现透明观感。 */
+[data-theme="simple-light"] footer {
+  background: var(--background);
+  border-color: var(--border);
+}
+
 /* Simple Dark 桌面侧栏滚动条。
    Chromium/Safari 保持现有 WebKit 尺寸与默认视觉；
    Firefox 单独使用标准 scrollbar 属性，避免干扰 Chrome 的 hover。 */
