@@ -114,7 +114,7 @@ html, body {
   }
 }
 
-/* Simple Dark 桌面侧栏滚动条：保持紧凑低调，鼠标移到滑块上时仅轻微提亮。 */
+/* Simple Dark 桌面侧栏滚动条：保持现有默认样式，仅匹配 YouTube 的 hover 亮度。 */
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
   scrollbar-width: thin;
@@ -142,7 +142,7 @@ html, body {
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: #9e9e9e;
   border: 1px solid transparent;
   background-clip: padding-box;
 }
