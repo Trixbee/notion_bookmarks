@@ -116,7 +116,7 @@ html, body {
 
 /* Simple Light 页脚：显式使用主题背景，避免固定页脚出现透明观感。 */
 [data-theme="simple-light"] footer {
-  background: var(--background);
+  background: hsl(var(--background));
   border-color: var(--border);
 }
 
