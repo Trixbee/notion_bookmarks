@@ -153,6 +153,44 @@ html, body {
   background-clip: padding-box;
 }
 
+/* Simple Light 桌面侧栏滚动条：沿用 Simple Dark 的尺寸、轨道和交互结构，
+   仅切换为适合浅色背景的中性灰。 */
+[data-theme="simple-light"] .desktop-sidebar {
+  color-scheme: light;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="simple-light"] .desktop-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+  }
+}
+
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-track,
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-track-piece,
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  background: rgba(0, 0, 0, 0.14);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #8e8e8e;
+  background-clip: padding-box;
+}
+
 /* QWeather Icons */
 @font-face {
   font-family: 'qweather-icons';
