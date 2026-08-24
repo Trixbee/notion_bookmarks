@@ -165,7 +165,7 @@ const Navigation = memo(function Navigation({
       {/* =========================
           桌面端侧边导航
       ========================== */}
-      <nav className="hidden lg:block w-[280px] flex-shrink-0 h-screen sticky top-0 p-4 overflow-y-auto border-r">
+      <nav className="desktop-sidebar hidden lg:block w-[280px] flex-shrink-0 h-screen sticky top-0 p-4 overflow-y-auto border-r">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
             <img
