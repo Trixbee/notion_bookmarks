@@ -31,7 +31,7 @@
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 240 10% 3.9%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
@@ -114,17 +114,22 @@ html, body {
   }
 }
 
-/* Simple Dark 桌面侧栏滚动条：低对比、透明轨道，
-   与侧栏背景融合，仅在 hover 时轻微增强。 */
+/* Simple Dark 桌面侧栏滚动条：
+   默认保持低存在感；hover 使用 YouTube 截图中的 #9e9e9e 亮度。
+   Chromium/Safari 仅使用 WebKit 滚动条样式，避免 scrollbar-color 抢占渲染。 */
 [data-theme="simple-dark"] .desktop-sidebar {
-  color-scheme: dark;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  [data-theme="simple-dark"] .desktop-sidebar {
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 12px;
+  height: 12px;
   background: transparent;
 }
 
@@ -137,13 +142,14 @@ html, body {
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
   min-height: 36px;
   background: rgba(255, 255, 255, 0.12);
-  border: 1px solid transparent;
+  border: 3px solid transparent;
   background-clip: padding-box;
   border-radius: 999px;
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: #9e9e9e;
+  border: 3px solid transparent;
   background-clip: padding-box;
 }
 
