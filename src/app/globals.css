@@ -115,17 +115,12 @@ html, body {
 }
 
 /* Simple Dark 桌面侧栏滚动条。
-   Chrome / Edge / Safari 仅使用 WebKit 滚动条，确保 thumb:hover 精确生效；
-   Firefox 单独使用标准 scrollbar-color 兜底。 */
+   放在 globals.css 是因为该文件由 RootLayout 确定加载；
+   主题专属的 simple/style.css 当前并未进入实际页面样式依赖链。 */
 [data-theme="simple-dark"] .desktop-sidebar {
   color-scheme: dark;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="simple-dark"] .desktop-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
-  }
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
 }
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
@@ -142,7 +137,7 @@ html, body {
 
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
   min-height: 36px;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.14);
   border: 1px solid transparent;
   background-clip: padding-box;
   border-radius: 999px;
