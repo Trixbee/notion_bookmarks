@@ -308,6 +308,109 @@ html, body {
   background-clip: padding-box;
 }
 
+/* 页面主滚动条：仅适配浏览器最右侧滚动条，不改变左侧 desktop-sidebar。 */
+html[data-theme="simple-light"] {
+  scrollbar-color: rgba(0, 0, 0, 0.30) #ffffff;
+}
+
+html[data-theme="simple-dark"] {
+  color-scheme: dark;
+  scrollbar-color: rgba(255, 255, 255, 0.30) #121212;
+}
+
+html[data-theme="cyberpunk-dark"] {
+  color-scheme: dark;
+  scrollbar-color: rgba(222, 87, 255, 0.40) hsl(232 40% 4%);
+}
+
+html[data-theme="bauhaus-primary"] {
+  scrollbar-color: rgba(13, 13, 13, 0.38) hsl(44 100% 97%);
+}
+
+html[data-theme="macintosh-1984"] {
+  scrollbar-color: rgba(20, 20, 20, 0.48) hsl(0 0% 88%);
+}
+
+html[data-theme]::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+html[data-theme="simple-light"]::-webkit-scrollbar-track,
+html[data-theme="simple-light"]::-webkit-scrollbar-corner {
+  background: #ffffff;
+}
+
+html[data-theme="simple-light"]::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.28);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+}
+
+html[data-theme="simple-light"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.46);
+}
+
+html[data-theme="simple-dark"]::-webkit-scrollbar-track,
+html[data-theme="simple-dark"]::-webkit-scrollbar-corner {
+  background: #121212;
+}
+
+html[data-theme="simple-dark"]::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border: 3px solid #121212;
+  border-radius: 999px;
+}
+
+html[data-theme="simple-dark"]::-webkit-scrollbar-thumb:hover {
+  background: #8e8e8e;
+}
+
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-track,
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-corner {
+  background: hsl(232 40% 4%);
+}
+
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-thumb {
+  background: rgba(222, 87, 255, 0.34);
+  border: 3px solid hsl(232 40% 4%);
+  border-radius: 999px;
+}
+
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(222, 87, 255, 0.58);
+}
+
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-track,
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-corner {
+  background: hsl(44 100% 97%);
+}
+
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-thumb {
+  background: rgba(13, 13, 13, 0.34);
+  border: 3px solid hsl(44 100% 97%);
+  border-radius: 999px;
+}
+
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(13, 13, 13, 0.58);
+}
+
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-track,
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-corner {
+  background: hsl(0 0% 88%);
+}
+
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb {
+  background: rgba(20, 20, 20, 0.42);
+  border: 3px solid hsl(0 0% 88%);
+  border-radius: 0;
+}
+
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(20, 20, 20, 0.68);
+}
+
 /* QWeather Icons */
 @font-face {
   font-family: 'qweather-icons';
