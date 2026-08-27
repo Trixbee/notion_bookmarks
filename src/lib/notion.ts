@@ -53,18 +53,36 @@ export const getLinks = cache(async () => {
             nextCursor = response.next_cursor || undefined;
         }
 
-        // 对链接进行排序：先按是否置顶，再按创建时间
+        // 排序规则：
+        // 1. 保持一级、二级分类分组稳定；
+        // 2. 同一二级分类内优先按 Notion 的 Order 升序；
+        // 3. 未填写 Order 的网址排在该二级分类最后；
+        // 4. Order 相同时，保留原有“力荐👍”优先和创建时间倒序作为兜底。
         allLinks.sort((a, b) => {
-            // 检查是否包含"力荐👍"
+            const category1Compare = a.category1.localeCompare(b.category1, 'zh-CN');
+            if (category1Compare !== 0) return category1Compare;
+
+            const category2Compare = a.category2.localeCompare(b.category2, 'zh-CN');
+            if (category2Compare !== 0) return category2Compare;
+
+            const aHasOrder = a.order !== null;
+            const bHasOrder = b.order !== null;
+
+            if (aHasOrder !== bHasOrder) {
+                return aHasOrder ? -1 : 1;
+            }
+
+            if (aHasOrder && bHasOrder && a.order !== b.order) {
+                return a.order! - b.order!;
+            }
+
             const aIsTop = a.tags.includes('力荐👍');
             const bIsTop = b.tags.includes('力荐👍');
 
-            // 如果置顶状态不同，置顶的排在前面
             if (aIsTop !== bIsTop) {
                 return aIsTop ? -1 : 1;
             }
 
-            // 如果置顶状态相同，按创建时间逆序排序
             return new Date(b.created).getTime() - new Date(a.created).getTime();
         });
 
