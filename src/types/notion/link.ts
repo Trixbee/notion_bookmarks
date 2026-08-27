@@ -6,7 +6,8 @@ import {
     SelectPropertyItemObjectResponse,
     FilesPropertyItemObjectResponse,
     MultiSelectPropertyItemObjectResponse,
-    CreatedTimePropertyItemObjectResponse
+    CreatedTimePropertyItemObjectResponse,
+    NumberPropertyItemObjectResponse
 } from "@notionhq/client/build/src/api-endpoints";
 import {
     isPageObjectResponse,
@@ -29,6 +30,7 @@ export interface NotionLinkProperties {
     iconfile: FilesPropertyItemObjectResponse;
     iconlink: UrlPropertyItemObjectResponse;
     Created: CreatedTimePropertyItemObjectResponse;
+    Order: NumberPropertyItemObjectResponse;
 }
 
 // Domain Model
@@ -43,6 +45,7 @@ export interface Link {
     iconfile: string;
     iconlink: string;
     tags: string[];
+    order: number | null;
 }
 
 // Type Guard
@@ -61,7 +64,8 @@ export function isNotionLinkPage(
         'Tags' in props &&
         'iconfile' in props &&
         'iconlink' in props &&
-        'Created' in props
+        'Created' in props &&
+        'Order' in props
     );
 }
 
@@ -79,5 +83,6 @@ export function toLink(page: PageObjectResponse & { properties: NotionLinkProper
         iconfile: extractFileUrl(props.iconfile),
         iconlink: extractUrl(props.iconlink),
         tags: extractMultiSelect(props.Tags),
+        order: props.Order.number ?? null,
     };
 }
