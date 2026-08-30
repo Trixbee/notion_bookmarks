@@ -71,14 +71,6 @@ html, body { max-width: 100vw; overflow-x: hidden; }
 @layer utilities { .animate-fade-in { animation: fadeIn 0.5s ease-out; } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Chromium/Windows 在长页面快速回到顶部时更容易丢弃首屏的栅格缓存。
-   只把第一个分类提升为独立合成层，避免整页使用 will-change 带来的显存开销。 */
-.first-category-section {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
 [data-theme="simple-light"] footer { background: var(--background); border-color: var(--border); }
 
 /* 导航激活态由 data-theme 决定，不再依赖 React hydration 时 useTheme() 是否已就绪。
