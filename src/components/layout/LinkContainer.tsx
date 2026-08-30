@@ -19,7 +19,9 @@ const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
   hour12: false
 }).replace(/\//g, '-');
 
-const PRIORITY_ICON_COUNT = 15;
+// 只提升真正接近首屏的图标，避免一次把过多 Notion 图片标成 high priority
+// 导致网络竞争和图片同步解码造成的滚动卡顿。
+const PRIORITY_ICON_COUNT = 10;
 
 export default function LinkContainer({
   initialLinks,
@@ -46,8 +48,6 @@ export default function LinkContainer({
   }
   const latestUpdate = latestTimestamp > 0 ? formatDate(new Date(latestTimestamp)) : null;
 
-  // 首屏（通常是“常用网站”）前 15 个图标改为 eager/high priority。
-  // 其余图标仍保持 lazy，兼顾首屏稳定性与长页面加载成本。
   const firstCategoryName = categories[0]?.name;
   const firstCategoryLinks = firstCategoryName
     ? Object.values(linksByCategory[firstCategoryName] ?? {}).flat()
