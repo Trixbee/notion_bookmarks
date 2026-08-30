@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, memo, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, memo, useCallback, useMemo, useRef } from 'react'
 import { cn } from '@/lib/utils'
 import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher'
 import * as Icons from 'lucide-react'
@@ -29,6 +29,10 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [mobileCategoryId, setMobileCategoryId] = useState<string>('')
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
+  const [isMobileSubNavVisible, setIsMobileSubNavVisible] = useState(true)
+  const lastScrollYRef = useRef(0)
+  const scrollDirectionDistanceRef = useRef(0)
+  const lastScrollDirectionRef = useRef<'up' | 'down' | null>(null)
 
   const mobileCategory = useMemo(
     () => categories.find(category => category.id === mobileCategoryId) || categories[0],
@@ -62,6 +66,9 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
 
   const handleMobileCategoryClick = useCallback((categoryId: string) => {
     setMobileCategoryId(categoryId)
+    setIsMobileSubNavVisible(true)
+    scrollDirectionDistanceRef.current = 0
+    lastScrollDirectionRef.current = null
     handleNavClick(categoryId)
   }, [handleNavClick])
 
@@ -74,6 +81,47 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     if (categories.length > 0 && activeCategory === '') setActiveCategory(categories[0].id)
     if (categories.length > 0 && mobileCategoryId === '') setMobileCategoryId(categories[0].id)
   }, [categories, activeCategory, mobileCategoryId])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    lastScrollYRef.current = window.scrollY
+
+    const handleScroll = () => {
+      if (window.innerWidth >= 1024) return
+
+      const currentScrollY = Math.max(window.scrollY, 0)
+      const delta = currentScrollY - lastScrollYRef.current
+      lastScrollYRef.current = currentScrollY
+
+      if (currentScrollY <= 20) {
+        setIsMobileSubNavVisible(true)
+        scrollDirectionDistanceRef.current = 0
+        lastScrollDirectionRef.current = null
+        return
+      }
+
+      if (Math.abs(delta) < 1) return
+
+      const direction = delta > 0 ? 'down' : 'up'
+      if (lastScrollDirectionRef.current !== direction) {
+        lastScrollDirectionRef.current = direction
+        scrollDirectionDistanceRef.current = 0
+      }
+      scrollDirectionDistanceRef.current += Math.abs(delta)
+
+      if (direction === 'down' && scrollDirectionDistanceRef.current >= 100) {
+        setIsMobileSubNavVisible(false)
+        scrollDirectionDistanceRef.current = 0
+      } else if (direction === 'up' && scrollDirectionDistanceRef.current >= 24) {
+        setIsMobileSubNavVisible(true)
+        scrollDirectionDistanceRef.current = 0
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <>
@@ -107,24 +155,31 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
         </div>
 
         {mobileCategory && mobileCategory.subCategories.length > 0 && (
-          <div className="overflow-x-auto flex items-center h-10 border-t scrollbar-none">
-            <div className="flex px-4 min-w-max gap-2">
-              {mobileCategory.subCategories.map(subCategory => {
-                const subId = `${mobileCategory.id}-${subCategory.id}`
-                const isActive = activeCategory === subId
-                return (
-                  <button
-                    key={subCategory.id}
-                    onClick={() => handleNavClick(mobileCategory.id, subCategory.id)}
-                    className={cn(
-                      'mobile-nav-subcategory-button whitespace-nowrap px-3 py-1 text-xs rounded-full transition-colors shrink-0',
-                      isActive
-                        ? 'mobile-nav-subcategory-active bg-primary text-primary-foreground font-medium'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                    )}
-                  >{subCategory.name}</button>
-                )
-              })}
+          <div
+            className={cn(
+              'overflow-hidden transition-[height,opacity] duration-200 ease-out',
+              isMobileSubNavVisible ? 'h-10 opacity-100 border-t' : 'h-0 opacity-0 border-t-0'
+            )}
+          >
+            <div className="overflow-x-auto flex items-center h-10 scrollbar-none">
+              <div className="flex px-4 min-w-max gap-2">
+                {mobileCategory.subCategories.map(subCategory => {
+                  const subId = `${mobileCategory.id}-${subCategory.id}`
+                  const isActive = activeCategory === subId
+                  return (
+                    <button
+                      key={subCategory.id}
+                      onClick={() => handleNavClick(mobileCategory.id, subCategory.id)}
+                      className={cn(
+                        'mobile-nav-subcategory-button whitespace-nowrap px-3 py-1 text-xs rounded-full transition-colors shrink-0',
+                        isActive
+                          ? 'mobile-nav-subcategory-active bg-primary text-primary-foreground font-medium'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      )}
+                    >{subCategory.name}</button>
+                  )
+                })}
+              </div>
             </div>
           </div>
         )}
