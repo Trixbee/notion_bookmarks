@@ -1,3 +1,5 @@
+import "@/themes/bauhaus/style.css"
+import "@/themes/macintosh-1984/style.css"
 import "@/themes/theme.css"
 import "./globals.css"
 import { Inter } from "next/font/google"
@@ -70,6 +72,12 @@ export default async function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+        />
         <Clarity clarityId={config.CLARITY_ID || ''} />
         <GoogleAnalytics gaId={config.GA_ID || ''} />
       </head>
