@@ -37,19 +37,19 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   src,
   alt,
   priority,
+  loaded,
   onLoad,
   onError
 }: {
   src: string;
   alt: string;
   priority: boolean;
+  loaded: boolean;
   onLoad?: () => void;
   onError: () => void;
 }) {
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // 浏览器缓存中的图片可能在 React 绑定事件前就完成加载；仅同步确认一次，
-  // 不轮询、不重试，也不人为把慢请求判定为失败。
   useEffect(() => {
     const image = imageRef.current;
     if (!image?.complete) return;
@@ -59,25 +59,40 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   }, [src, onLoad, onError]);
 
   return (
-    // 刻意使用原生 img，避免 Vercel Image Optimization 免费额度消耗。
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      ref={imageRef}
-      src={src}
-      alt={alt}
-      className="w-full h-full object-contain"
-      onLoad={onLoad}
-      onError={onError}
-      loading={priority ? 'eager' : 'lazy'}
-      decoding="async"
-      fetchPriority={priority ? 'high' : 'auto'}
-      referrerPolicy="no-referrer"
-    />
+    <>
+      {/* 加载期间使用本地地球图标占位；真实图片成功后占位立即卸载，二者不叠加。 */}
+      {!loaded && src !== FALLBACK_ICON_SRC && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={FALLBACK_ICON_SRC}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-contain opacity-45"
+        />
+      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={imageRef}
+        src={src}
+        alt={alt}
+        className={cn(
+          'relative w-full h-full object-contain transition-opacity duration-150',
+          loaded || src === FALLBACK_ICON_SRC ? 'opacity-100' : 'opacity-0'
+        )}
+        onLoad={onLoad}
+        onError={onError}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchPriority={priority ? 'high' : 'auto'}
+        referrerPolicy="no-referrer"
+      />
+    </>
   );
 }, (prev, next) => (
   prev.src === next.src &&
   prev.alt === next.alt &&
-  prev.priority === next.priority
+  prev.priority === next.priority &&
+  prev.loaded === next.loaded
 ));
 
 const LinkCard = memo(function LinkCard({ link, className, priority = false }: LinkCardProps) {
@@ -88,7 +103,6 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
 
   const handleImageError = useCallback(() => {
     setIconState((state) => {
-      // fallback 自己若失败，不再进入循环。
       if (state.src === FALLBACK_ICON_SRC) return state;
       return getFailedIconState();
     });
@@ -112,9 +126,6 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
     setter({ show: false, x: 0, y: 0 });
   }, []);
 
-  // 以前这里在组件每次 mount 后都会无条件重置成“加载中”，可能发生：
-  // 图片已经触发 onLoad -> 状态变 loaded -> effect 又把状态重置，造成转圈不消失或返回顶部时像重新加载。
-  // 现在只有真实的图标 URL 发生变化时才重置状态。
   useEffect(() => {
     const currentSource = getLinkIconUrl(link);
     if (previousIconSourceRef.current === currentSource) return;
@@ -144,6 +155,7 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
                   src={iconState.src}
                   alt={link.name}
                   priority={priority}
+                  loaded={iconState.isLoaded}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
@@ -151,14 +163,8 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
             </div>
 
             <div className="flex-1 min-w-0 relative">
-              <div
-                className="relative"
-                onMouseEnter={(e) => handleMouseEnter(e, true)}
-                onMouseLeave={() => handleMouseLeave(true)}
-              >
-                <h3 className="text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 pr-6">
-                  {link.name}
-                </h3>
+              <div className="relative" onMouseEnter={(e) => handleMouseEnter(e, true)} onMouseLeave={() => handleMouseLeave(true)}>
+                <h3 className="text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 pr-6">{link.name}</h3>
               </div>
               <div className="absolute right-0 top-1/2 -translate-y-1/2">
                 <IconExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -167,35 +173,20 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
           </div>
 
           {link.desc && (
-            <div
-              className="relative flex-1 min-h-0"
-              onMouseEnter={(e) => handleMouseEnter(e, false)}
-              onMouseLeave={() => handleMouseLeave(false)}
-            >
-              <p className="text-sm text-foreground/80 group-hover:text-foreground line-clamp-2 transition-colors">
-                {link.desc}
-              </p>
+            <div className="relative flex-1 min-h-0" onMouseEnter={(e) => handleMouseEnter(e, false)} onMouseLeave={() => handleMouseLeave(false)}>
+              <p className="text-sm text-foreground/80 group-hover:text-foreground line-clamp-2 transition-colors">{link.desc}</p>
             </div>
           )}
 
           {link.tags && link.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-auto flex-shrink-0">
               {link.tags.slice(0, 3).map((tag) => (
-                <span
-                  key={tag}
-                  className={cn(
-                    'link-tag inline-flex items-center px-2 py-0.5 text-xs rounded-md bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary/90 transition-colors',
-                    tag.includes('力荐') && 'link-tag-featured'
-                  )}
-                  title={tag}
-                >
+                <span key={tag} className={cn('link-tag inline-flex items-center px-2 py-0.5 text-xs rounded-md bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary/90 transition-colors', tag.includes('力荐') && 'link-tag-featured')} title={tag}>
                   <span className="link-tag-label truncate max-w-[80px]">{tag}</span>
                 </span>
               ))}
               {link.tags.length > 3 && (
-                <span className="link-tag inline-flex items-center px-2 py-0.5 text-xs rounded-md bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary/90 transition-colors shrink-0">
-                  +{link.tags.length - 3}
-                </span>
+                <span className="link-tag inline-flex items-center px-2 py-0.5 text-xs rounded-md bg-muted/40 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary/90 transition-colors shrink-0">+{link.tags.length - 3}</span>
               )}
             </div>
           )}
@@ -204,20 +195,8 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-transparent to-transparent group-hover:from-primary/5 group-hover:via-primary/2 group-hover:to-transparent transition-colors duration-500" />
       </a>
 
-      <Tooltip
-        content={link.name}
-        show={titleTooltip.show}
-        x={titleTooltip.x}
-        y={titleTooltip.y}
-      />
-      {link.desc && (
-        <Tooltip
-          content={link.desc}
-          show={descTooltip.show}
-          x={descTooltip.x}
-          y={descTooltip.y}
-        />
-      )}
+      <Tooltip content={link.name} show={titleTooltip.show} x={titleTooltip.x} y={titleTooltip.y} />
+      {link.desc && <Tooltip content={link.desc} show={descTooltip.show} x={descTooltip.x} y={descTooltip.y} />}
     </>
   );
 }, (prev, next) => {
