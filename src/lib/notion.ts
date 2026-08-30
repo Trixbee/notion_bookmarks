@@ -1,7 +1,7 @@
 import { Client } from "@notionhq/client";
 import { GetDatabaseResponse, DatabaseObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { cache } from "react";
-import { envConfig } from '@/config';
+import { envConfig, defaultConfig } from '@/config';
 import {
     Link,
     WebsiteConfig,
@@ -19,6 +19,17 @@ export const notion = new Client({
 });
 
 export const revalidate = parseInt(process.env.REVALIDATE_TIME ?? '43200', 10);
+
+const fallbackWebsiteConfig: WebsiteConfig = {
+    ...defaultConfig,
+    SITE_AUTHOR: '',
+    SITE_FAVICON: '/favicon.ico',
+    THEME_NAME: 'simple',
+    SHOW_THEME_SWITCHER: 'true',
+    CLARITY_ID: '',
+    GA_ID: '',
+    WIDGET_CONFIG: '',
+};
 
 // 获取网址链接
 export const getLinks = cache(async () => {
@@ -120,7 +131,6 @@ export const getWebsiteConfig = cache(async () => {
         const fullDatabase = database as DatabaseObjectResponse;
         if (fullDatabase.icon) {
             if (fullDatabase.icon.type === 'emoji') {
-                // 如果是 emoji，生成 data URL
                 favicon = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${fullDatabase.icon.emoji}</text></svg>`;
             } else if (fullDatabase.icon.type === 'file' && fullDatabase.icon.file) {
                 favicon = fullDatabase.icon.file.url;
@@ -129,39 +139,31 @@ export const getWebsiteConfig = cache(async () => {
             }
         }
 
-        // 返回基础配置
-        // 将配置对象转换为 WebsiteConfig 类型
-        // 注意：这里我们保留原有逻辑，将动态获取的配置与默认值合并
         const config: WebsiteConfig = {
-            // 基础配置
             SITE_TITLE: configMap.SITE_TITLE ?? '我的导航',
             SITE_DESCRIPTION: configMap.SITE_DESCRIPTION ?? '个人导航网站',
             SITE_KEYWORDS: configMap.SITE_KEYWORDS ?? '导航,网址导航',
             SITE_AUTHOR: configMap.SITE_AUTHOR ?? '',
             SITE_FOOTER: configMap.SITE_FOOTER ?? '',
             SITE_FAVICON: favicon,
-            // 主题配置
             THEME_NAME: configMap.THEME_NAME ?? 'simple',
             SHOW_THEME_SWITCHER: configMap.SHOW_THEME_SWITCHER ?? 'true',
-
-            // 社交媒体配置
             SOCIAL_GITHUB: configMap.SOCIAL_GITHUB ?? '',
             SOCIAL_BLOG: configMap.SOCIAL_BLOG ?? '',
             SOCIAL_X: configMap.SOCIAL_X ?? '',
             SOCIAL_JIKE: configMap.SOCIAL_JIKE ?? '',
             SOCIAL_WEIBO: configMap.SOCIAL_WEIBO ?? '',
             SOCIAL_XIAOHONGSHU: configMap.SOCIAL_XIAOHONGSHU ?? '',
-            // 分析和统计
             CLARITY_ID: configMap.CLARITY_ID ?? '',
             GA_ID: configMap.GA_ID ?? '',
-            // 新增widgets配置
             WIDGET_CONFIG: configMap.WIDGET_CONFIG ?? '',
         };
 
         return config;
     } catch (error) {
-        console.error('获取网站配置失败:', error);
-        throw new Error('获取网站配置失败');
+        // 配置数据库短暂不可用时不让整个站点失败，使用安全默认值继续渲染。
+        console.error('获取网站配置失败，已使用默认配置:', error);
+        return { ...fallbackWebsiteConfig };
     }
 });
 
