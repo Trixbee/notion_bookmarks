@@ -19,8 +19,6 @@ const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
   hour12: false
 }).replace(/\//g, '-');
 
-const PRIORITY_ICON_COUNT = 10;
-
 export default function LinkContainer({
   initialLinks,
   enabledCategories,
@@ -46,23 +44,16 @@ export default function LinkContainer({
   const latestUpdate = latestTimestamp > 0 ? formatDate(new Date(latestTimestamp)) : null;
 
   const firstCategoryName = categories[0]?.name;
-  const firstCategoryLinks = firstCategoryName
-    ? Object.values(linksByCategory[firstCategoryName] ?? {}).flat()
-    : [];
-  const priorityLinkIds = new Set(firstCategoryLinks.slice(0, PRIORITY_ICON_COUNT).map(link => link.id));
 
   return (
     <div className="space-y-16 pb-12 w-full min-w-0">
-      {categories.map((category, categoryIndex) => {
+      {categories.map((category) => {
         const categoryLinks = linksByCategory[category.name];
         if (!categoryLinks) return null;
+        const eagerCategory = category.name === firstCategoryName;
 
         return (
-          <section
-            key={category.id}
-            id={category.id}
-            className={`space-y-8${categoryIndex === 0 ? ' first-category-section' : ''}`}
-          >
+          <section key={category.id} id={category.id} className="space-y-8">
             <div className="section-heading flex items-center gap-3 pb-2 border-b">
               {category.iconName && Icons[category.iconName as keyof typeof Icons] ? (
                 <div className="section-heading-icon w-7 h-7 p-1 rounded-lg bg-primary/5 text-primary">
@@ -91,7 +82,7 @@ export default function LinkContainer({
                           key={link.id}
                           link={link}
                           className="w-full"
-                          priority={priorityLinkIds.has(link.id)}
+                          eager={eagerCategory}
                         />
                       ))}
                     </div>
