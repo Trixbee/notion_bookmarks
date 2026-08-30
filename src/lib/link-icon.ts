@@ -1,5 +1,4 @@
 export const FALLBACK_ICON_SRC = '/globe.svg';
-export const ICON_LOAD_TIMEOUT_MS = 4000;
 
 type LinkIconSource = {
   iconfile?: string | null;
@@ -34,7 +33,8 @@ export function getInitialIconState(link: LinkIconSource): IconLoadState {
     isLoaded: src === FALLBACK_ICON_SRC,
     hasFailed: false,
     showFallback: false,
-    showSpinner: src !== FALLBACK_ICON_SRC,
+    // 小图标加载期间保持稳定的图标容器，不显示持续旋转的 loading 动画。
+    showSpinner: false,
   };
 }
 
@@ -53,21 +53,6 @@ export function getFailedIconState(): IconLoadState {
     isLoaded: true,
     hasFailed: true,
     showFallback: false,
-    showSpinner: false,
-  };
-}
-
-export function getTimedOutIconState(state: IconLoadState): IconLoadState {
-  if (state.isLoaded || state.src === FALLBACK_ICON_SRC) {
-    return {
-      ...state,
-      showSpinner: false,
-    };
-  }
-
-  return {
-    ...state,
-    showFallback: true,
     showSpinner: false,
   };
 }
