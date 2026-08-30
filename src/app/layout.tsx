@@ -1,5 +1,5 @@
-import "./globals.css"
 import "@/themes/theme.css"
+import "./globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/ui/ThemeProvider"
 import { Metadata } from "next"
