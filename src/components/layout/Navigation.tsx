@@ -25,6 +25,9 @@ const defaultConfig: WebsiteConfig = {
   SOCIAL_GITHUB: '', SOCIAL_BLOG: '', SOCIAL_X: '', SOCIAL_JIKE: '', SOCIAL_WEIBO: ''
 }
 
+const getVisibleSubCategories = (category?: Category) =>
+  category?.subCategories.filter(subCategory => subCategory.name !== '默认') ?? []
+
 const Navigation = memo(function Navigation({ categories, config = defaultConfig }: NavigationProps) {
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [mobileCategoryId, setMobileCategoryId] = useState<string>('')
@@ -33,6 +36,10 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
   const mobileCategory = useMemo(
     () => categories.find(category => category.id === mobileCategoryId) || categories[0],
     [categories, mobileCategoryId]
+  )
+  const mobileSubCategories = useMemo(
+    () => getVisibleSubCategories(mobileCategory),
+    [mobileCategory]
   )
 
   const toggleCategory = useCallback((categoryId: string) => {
@@ -65,9 +72,9 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     handleNavClick(categoryId)
   }, [handleNavClick])
 
-  const handleCategoryToggle = useCallback((categoryId: string) => {
-    toggleCategory(categoryId)
-    handleNavClick(categoryId)
+  const handleCategoryClick = useCallback((category: Category) => {
+    if (getVisibleSubCategories(category).length > 0) toggleCategory(category.id)
+    handleNavClick(category.id)
   }, [handleNavClick, toggleCategory])
 
   useEffect(() => {
@@ -106,10 +113,10 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
           </div>
         </div>
 
-        {mobileCategory && mobileCategory.subCategories.length > 0 && (
+        {mobileCategory && mobileSubCategories.length > 0 && (
           <div className="overflow-x-auto flex items-center h-10 border-t scrollbar-none">
             <div className="flex px-4 min-w-max gap-2">
-              {mobileCategory.subCategories.map(subCategory => {
+              {mobileSubCategories.map(subCategory => {
                 const subId = `${mobileCategory.id}-${subCategory.id}`
                 const isActive = activeCategory === subId
                 return (
@@ -145,13 +152,15 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
               ? (Icons[category.iconName as keyof typeof Icons] as React.ComponentType)
               : Icons.Globe
             const isCategoryActive = activeCategory === category.id || activeCategory.startsWith(`${category.id}-`)
-            const isCategoryExpanded = expandedCategories.has(category.id)
+            const visibleSubCategories = getVisibleSubCategories(category)
+            const hasVisibleSubCategories = visibleSubCategories.length > 0
+            const isCategoryExpanded = hasVisibleSubCategories && expandedCategories.has(category.id)
 
             return (
               <li key={category.id}>
                 <div className="flex flex-col">
                   <button
-                    onClick={() => handleCategoryToggle(category.id)}
+                    onClick={() => handleCategoryClick(category)}
                     className={cn(
                       'nav-category-button w-full flex items-center justify-between px-4 py-2 rounded-lg transition-colors',
                       isCategoryActive
@@ -162,12 +171,14 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
                     )}
                   >
                     <div className="flex items-center space-x-2"><IconComponent className="w-4 h-4" /><span>{category.name}</span></div>
-                    <Icons.ChevronDown className={cn('w-4 h-4 transition-transform', isCategoryExpanded ? 'rotate-180' : '')} />
+                    {hasVisibleSubCategories && (
+                      <Icons.ChevronDown className={cn('w-4 h-4 transition-transform', isCategoryExpanded ? 'rotate-180' : '')} />
+                    )}
                   </button>
 
                   {isCategoryExpanded && (
                     <ul className="mt-1 ml-4 space-y-1">
-                      {category.subCategories.map(subCategory => (
+                      {visibleSubCategories.map(subCategory => (
                         <li key={subCategory.id}>
                           <button
                             onClick={() => handleNavClick(category.id, subCategory.id)}
