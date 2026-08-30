@@ -9,6 +9,7 @@ import {
   FALLBACK_ICON_SRC,
   getFailedIconState,
   getInitialIconState,
+  getLinkIconUrl,
   getLoadedIconState,
 } from '@/lib/link-icon';
 
@@ -47,7 +48,8 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
 }) {
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // 缓存图片可能在 React 绑定事件前就已完成，只做一次同步检查即可。
+  // 浏览器缓存中的图片可能在 React 绑定事件前就完成加载；仅同步确认一次，
+  // 不轮询、不重试，也不人为把慢请求判定为失败。
   useEffect(() => {
     const image = imageRef.current;
     if (!image?.complete) return;
@@ -67,8 +69,8 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
       onLoad={onLoad}
       onError={onError}
       loading={priority ? 'eager' : 'lazy'}
-      decoding={priority ? 'sync' : 'async'}
-      fetchPriority={priority ? 'high' : 'low'}
+      decoding="async"
+      fetchPriority={priority ? 'high' : 'auto'}
       referrerPolicy="no-referrer"
     />
   );
@@ -82,17 +84,21 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
   const [titleTooltip, setTitleTooltip] = useState({ show: false, x: 0, y: 0 });
   const [descTooltip, setDescTooltip] = useState({ show: false, x: 0, y: 0 });
   const [iconState, setIconState] = useState(() => getInitialIconState(link));
+  const previousIconSourceRef = useRef(getLinkIconUrl(link));
 
   const handleImageError = useCallback(() => {
     setIconState((state) => {
-      // fallback 自己若也失败，不再反复切换状态。
+      // fallback 自己若失败，不再进入循环。
       if (state.src === FALLBACK_ICON_SRC) return state;
       return getFailedIconState();
     });
   }, []);
 
   const handleImageLoad = useCallback(() => {
-    setIconState((state) => getLoadedIconState(state));
+    setIconState((state) => {
+      if (state.isLoaded) return state;
+      return getLoadedIconState(state);
+    });
   }, []);
 
   const handleMouseEnter = useCallback((event: React.MouseEvent<HTMLElement>, isTitle: boolean) => {
@@ -106,9 +112,16 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
     setter({ show: false, x: 0, y: 0 });
   }, []);
 
+  // 以前这里在组件每次 mount 后都会无条件重置成“加载中”，可能发生：
+  // 图片已经触发 onLoad -> 状态变 loaded -> effect 又把状态重置，造成转圈不消失或返回顶部时像重新加载。
+  // 现在只有真实的图标 URL 发生变化时才重置状态。
   useEffect(() => {
+    const currentSource = getLinkIconUrl(link);
+    if (previousIconSourceRef.current === currentSource) return;
+
+    previousIconSourceRef.current = currentSource;
     setIconState(getInitialIconState(link));
-  }, [link]);
+  }, [link.iconfile, link.iconlink, link]);
 
   return (
     <>
@@ -134,12 +147,6 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
-
-                {iconState.showSpinner && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
-                    <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  </div>
-                )}
               </div>
             </div>
 
