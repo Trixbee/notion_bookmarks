@@ -56,7 +56,8 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     if (element) {
       const rect = element.getBoundingClientRect()
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      window.scrollTo({ top: rect.top + scrollTop - 148, behavior: 'smooth' })
+      const offset = window.innerWidth < 1024 ? 148 : 100
+      window.scrollTo({ top: rect.top + scrollTop - offset, behavior: 'smooth' })
     }
   }, [])
 
@@ -204,7 +205,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
         )}
       </nav>
 
-      <nav className="desktop-sidebar hidden lg:block w-[280px] flex-shrink-0 h-screen sticky top-0 p-4 overflow-y-auto border-r">
+      <nav className="desktop-sidebar hidden lg:block fixed left-0 top-0 w-[280px] h-screen z-20 p-4 overflow-y-auto border-r">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
             <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
