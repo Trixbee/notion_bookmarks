@@ -1,7 +1,7 @@
 // src/components/LinkContainer.tsx
 "use client";
 
-import React, { useState, useEffect, useMemo, memo } from "react";
+import React, { useMemo, memo } from "react";
 import LinkCard from "@/components/ui/LinkCard";
 import * as Icons from "lucide-react";
 import { Link, Category } from '@/types';
@@ -12,46 +12,42 @@ interface LinkContainerProps {
   categories: Category[];
 }
 
+const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false
+}).replace(/\//g, '-');
+
 const LinkContainer = memo(function LinkContainer({
   initialLinks,
   enabledCategories,
   categories,
 }: LinkContainerProps) {
-  const [mounted, setMounted] = useState(false);
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    setCurrentTime(new Date());
-  }, []);
-
   // 按一级和二级分类组织链接，只包含启用的分类
   const linksByCategory = useMemo(() => initialLinks.reduce((acc, link) => {
     const cat1 = link.category1;
     const cat2 = link.category2;
 
     if (enabledCategories.has(cat1)) {
-      if (!acc[cat1]) {
-        acc[cat1] = {};
-      }
-      if (!acc[cat1][cat2]) {
-        acc[cat1][cat2] = [];
-      }
+      if (!acc[cat1]) acc[cat1] = {};
+      if (!acc[cat1][cat2]) acc[cat1][cat2] = [];
       acc[cat1][cat2].push(link);
     }
     return acc;
   }, {} as Record<string, Record<string, Link[]>>), [initialLinks, enabledCategories]);
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).replace(/\//g, '-');
-  };
+  // “最近更新”使用真实链接数据，而不是浏览器打开页面的当前时间。
+  const latestUpdate = useMemo(() => {
+    let latest = 0;
+    for (const link of initialLinks) {
+      const timestamp = new Date(link.created).getTime();
+      if (Number.isFinite(timestamp) && timestamp > latest) latest = timestamp;
+    }
+    return latest > 0 ? formatDate(new Date(latest)) : null;
+  }, [initialLinks]);
 
   return (
     <div className="space-y-16 pb-12 w-full min-w-0">
@@ -62,13 +58,10 @@ const LinkContainer = memo(function LinkContainer({
         return (
           <section key={category.id} id={category.id} className="space-y-8">
             <div className="section-heading flex items-center gap-3 pb-2 border-b">
-              {category.iconName &&
-              Icons[category.iconName as keyof typeof Icons] ? (
+              {category.iconName && Icons[category.iconName as keyof typeof Icons] ? (
                 <div className="section-heading-icon w-7 h-7 p-1 rounded-lg bg-primary/5 text-primary">
                   {React.createElement(
-                    Icons[
-                      category.iconName as keyof typeof Icons
-                    ] as React.ComponentType<{ className: string }>,
+                    Icons[category.iconName as keyof typeof Icons] as React.ComponentType<{ className: string }>,
                     { className: "w-5 h-5" }
                   )}
                 </div>
@@ -79,19 +72,13 @@ const LinkContainer = memo(function LinkContainer({
             <div className="space-y-12">
               {Object.entries(categoryLinks).map(([subCategory, links]) => (
                 <div
-                  key={`${category.id}-${subCategory
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
-                  id={`${category.id}-${subCategory
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
+                  key={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
+                  id={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
                   className="space-y-4"
                 >
                   <div className="flex items-center space-x-2">
                     <div className="w-1 h-1 rounded-full bg-primary"></div>
-                    <h3 className="text-lg font-medium text-foreground/90">
-                      {subCategory}
-                    </h3>
+                    <h3 className="text-lg font-medium text-foreground/90">{subCategory}</h3>
                     <div className="text-sm text-muted-foreground">({links.length})</div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
@@ -105,9 +92,9 @@ const LinkContainer = memo(function LinkContainer({
           </section>
         );
       })}
-      {mounted && currentTime && (
+      {latestUpdate && (
         <div className="mt-12 text-center text-sm text-muted-foreground">
-          最近更新：{formatDate(currentTime)}
+          最近更新：{latestUpdate}
         </div>
       )}
     </div>
