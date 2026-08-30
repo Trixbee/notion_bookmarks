@@ -1,7 +1,5 @@
 // src/components/LinkContainer.tsx
-"use client";
-
-import React, { useMemo, memo } from "react";
+import React from "react";
 import LinkCard from "@/components/ui/LinkCard";
 import * as Icons from "lucide-react";
 import { Link, Category } from '@/types';
@@ -21,13 +19,13 @@ const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
   hour12: false
 }).replace(/\//g, '-');
 
-const LinkContainer = memo(function LinkContainer({
+export default function LinkContainer({
   initialLinks,
   enabledCategories,
   categories,
 }: LinkContainerProps) {
-  // 按一级和二级分类组织链接，只包含启用的分类
-  const linksByCategory = useMemo(() => initialLinks.reduce((acc, link) => {
+  // 这部分只需要在服务端生成 HTML，不再为整棵分类结构做客户端 hydration。
+  const linksByCategory = initialLinks.reduce((acc, link) => {
     const cat1 = link.category1;
     const cat2 = link.category2;
 
@@ -37,17 +35,14 @@ const LinkContainer = memo(function LinkContainer({
       acc[cat1][cat2].push(link);
     }
     return acc;
-  }, {} as Record<string, Record<string, Link[]>>), [initialLinks, enabledCategories]);
+  }, {} as Record<string, Record<string, Link[]>>);
 
-  // “最近更新”使用真实链接数据，而不是浏览器打开页面的当前时间。
-  const latestUpdate = useMemo(() => {
-    let latest = 0;
-    for (const link of initialLinks) {
-      const timestamp = new Date(link.created).getTime();
-      if (Number.isFinite(timestamp) && timestamp > latest) latest = timestamp;
-    }
-    return latest > 0 ? formatDate(new Date(latest)) : null;
-  }, [initialLinks]);
+  let latestTimestamp = 0;
+  for (const link of initialLinks) {
+    const timestamp = new Date(link.created).getTime();
+    if (Number.isFinite(timestamp) && timestamp > latestTimestamp) latestTimestamp = timestamp;
+  }
+  const latestUpdate = latestTimestamp > 0 ? formatDate(new Date(latestTimestamp)) : null;
 
   return (
     <div className="space-y-16 pb-12 w-full min-w-0">
@@ -70,24 +65,23 @@ const LinkContainer = memo(function LinkContainer({
             </div>
 
             <div className="space-y-12">
-              {Object.entries(categoryLinks).map(([subCategory, links]) => (
-                <div
-                  key={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
-                  id={`${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <div className="w-1 h-1 rounded-full bg-primary"></div>
-                    <h3 className="text-lg font-medium text-foreground/90">{subCategory}</h3>
-                    <div className="text-sm text-muted-foreground">({links.length})</div>
+              {Object.entries(categoryLinks).map(([subCategory, links]) => {
+                const sectionId = `${category.id}-${subCategory.toLowerCase().replace(/\s+/g, "-")}`;
+                return (
+                  <div key={sectionId} id={sectionId} className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-1 h-1 rounded-full bg-primary"></div>
+                      <h3 className="text-lg font-medium text-foreground/90">{subCategory}</h3>
+                      <div className="text-sm text-muted-foreground">({links.length})</div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
+                      {links.map((link) => (
+                        <LinkCard key={link.id} link={link} className="w-full" />
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
-                    {links.map((link) => (
-                      <LinkCard key={link.id} link={link} className="w-full" />
-                    ))}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         );
@@ -99,6 +93,4 @@ const LinkContainer = memo(function LinkContainer({
       )}
     </div>
   );
-});
-
-export default LinkContainer;
+}
