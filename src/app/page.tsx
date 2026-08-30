@@ -56,10 +56,10 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
-      {/* 移动端顶部导航 */}
-      <nav className="fixed top-0 left-0 right-0 z-30 bg-white border-b lg:hidden">
+      {/* 移动端导航由 Navigation 自身负责 fixed、背景和边框。 */}
+      <div className="lg:hidden">
         <Navigation categories={categoriesWithSubs} config={config} />
-      </nav>
+      </div>
       {/* PC端侧边栏导航 */}
       <aside className="fixed left-0 top-0 w-[300px] h-screen z-20  hidden lg:block pb-24">
         <Navigation categories={categoriesWithSubs} config={config} />
