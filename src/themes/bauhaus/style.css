@@ -163,6 +163,13 @@
   color: white !important;
 }
 
+/* 移动端二级分类固定为黄底黑字激活态，避免通用 bg-primary 规则产生瞬时异常颜色。 */
+[data-theme="bauhaus-primary"] nav button.mobile-nav-subcategory-button.mobile-nav-subcategory-active {
+  background: var(--bauhaus-yellow) !important;
+  color: var(--bauhaus-ink) !important;
+  box-shadow: inset 4px 0 0 var(--bauhaus-blue);
+}
+
 [data-theme="bauhaus-primary"] .theme-switcher-trigger {
   display: inline-flex;
   width: 2.5rem;
@@ -431,9 +438,21 @@
 
 [data-theme="bauhaus-primary"] ::-webkit-scrollbar-track {
   background: var(--bauhaus-paper);
+  border-left: 2px solid var(--bauhaus-ink);
 }
 
 [data-theme="bauhaus-primary"] ::-webkit-scrollbar-thumb {
-  background: var(--bauhaus-blue);
+  background: var(--bauhaus-yellow);
   border: 2px solid var(--bauhaus-ink);
+  border-radius: 0;
+}
+
+[data-theme="bauhaus-primary"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--bauhaus-red);
+}
+
+@media (min-width: 1024px) {
+  [data-theme="bauhaus-primary"] footer {
+    left: 300px;
+  }
 }
