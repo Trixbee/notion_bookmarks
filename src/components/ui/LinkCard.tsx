@@ -16,7 +16,7 @@ import {
 interface LinkCardProps {
   link: Link;
   className?: string;
-  priority?: boolean;
+  eager?: boolean;
 }
 
 function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: number; y: number }) {
@@ -36,14 +36,14 @@ function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: n
 const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   src,
   alt,
-  priority,
+  eager,
   loaded,
   onLoad,
   onError
 }: {
   src: string;
   alt: string;
-  priority: boolean;
+  eager: boolean;
   loaded: boolean;
   onLoad?: () => void;
   onError: () => void;
@@ -60,7 +60,6 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
 
   return (
     <>
-      {/* 加载期间使用本地地球图标占位；真实图片成功后占位立即卸载，二者不叠加。 */}
       {!loaded && src !== FALLBACK_ICON_SRC && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -81,9 +80,9 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
         )}
         onLoad={onLoad}
         onError={onError}
-        loading={priority ? 'eager' : 'lazy'}
+        loading={eager ? 'eager' : 'lazy'}
         decoding="async"
-        fetchPriority={priority ? 'high' : 'auto'}
+        fetchPriority="auto"
         referrerPolicy="no-referrer"
       />
     </>
@@ -91,11 +90,11 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
 }, (prev, next) => (
   prev.src === next.src &&
   prev.alt === next.alt &&
-  prev.priority === next.priority &&
+  prev.eager === next.eager &&
   prev.loaded === next.loaded
 ));
 
-const LinkCard = memo(function LinkCard({ link, className, priority = false }: LinkCardProps) {
+const LinkCard = memo(function LinkCard({ link, className, eager = false }: LinkCardProps) {
   const [titleTooltip, setTitleTooltip] = useState({ show: false, x: 0, y: 0 });
   const [descTooltip, setDescTooltip] = useState({ show: false, x: 0, y: 0 });
   const [iconState, setIconState] = useState(() => getInitialIconState(link));
@@ -141,7 +140,7 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          "group flex h-full flex-col p-4 rounded-xl border border-border/50 bg-card hover:border-primary/50 transition-[transform,border-color,box-shadow] duration-200 hover:scale-[1.02] active:scale-[0.98]",
+          "relative group flex h-full flex-col p-4 rounded-xl border border-border/50 bg-card hover:border-primary/50 transition-[transform,border-color,box-shadow] duration-200 hover:scale-[1.02] active:scale-[0.98]",
           "hover:shadow-lg hover:shadow-primary/5",
           "w-full max-w-full",
           className
@@ -154,7 +153,7 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
                 <OptimisedLinkIcon
                   src={iconState.src}
                   alt={link.name}
-                  priority={priority}
+                  eager={eager}
                   loaded={iconState.isLoaded}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
@@ -192,7 +191,7 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
           )}
         </div>
 
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-transparent to-transparent group-hover:from-primary/5 group-hover:via-primary/2 group-hover:to-transparent transition-colors duration-500" />
+        <div className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-transparent via-transparent to-transparent group-hover:from-primary/5 group-hover:via-primary/2 group-hover:to-transparent transition-colors duration-500" />
       </a>
 
       <Tooltip content={link.name} show={titleTooltip.show} x={titleTooltip.x} y={titleTooltip.y} />
@@ -212,7 +211,7 @@ const LinkCard = memo(function LinkCard({ link, className, priority = false }: L
     prev.link.iconlink === next.link.iconlink &&
     prevTags.length === nextTags.length &&
     prevTags.every((tag, index) => tag === nextTags[index]) &&
-    prev.priority === next.priority &&
+    prev.eager === next.eager &&
     prev.className === next.className
   );
 });
