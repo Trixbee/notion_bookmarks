@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils'
 import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher'
 import * as Icons from 'lucide-react'
 import { WebsiteConfig } from '@/types'
-import { useTheme } from 'next-themes'
 
 interface Category {
   id: string
@@ -30,7 +29,6 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
   const [activeCategory, setActiveCategory] = useState<string>('')
   const [mobileCategoryId, setMobileCategoryId] = useState<string>('')
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
-  const { theme } = useTheme()
 
   const mobileCategory = useMemo(
     () => categories.find(category => category.id === mobileCategoryId) || categories[0],
@@ -79,10 +77,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
 
   return (
     <>
-      <nav className={cn(
-        'lg:hidden fixed top-0 left-0 right-0 z-20 border-b',
-        theme === 'simple-light' ? 'bg-white' : 'bg-background'
-      )}>
+      <nav className="lg:hidden fixed top-0 left-0 right-0 z-20 border-b bg-background">
         <div className="flex items-center justify-between px-4 h-16">
           <div className="flex items-center space-x-2">
             <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
@@ -91,7 +86,6 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
           {config.SHOW_THEME_SWITCHER !== 'false' && <ThemeSwitcher />}
         </div>
 
-        {/* 一级分类：始终显示 */}
         <div className="overflow-x-auto flex items-center h-12 border-t scrollbar-none">
           <div className="flex px-4 min-w-max gap-2">
             {categories.map(category => {
@@ -103,15 +97,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
                   className={cn(
                     'mobile-nav-category-button whitespace-nowrap px-3 py-1.5 text-sm rounded-full transition-colors shrink-0',
                     isActive
-                      ? theme === 'bauhaus-primary'
-                        ? 'mobile-nav-category-active font-medium'
-                        : theme === 'simple-dark'
-                        ? 'mobile-nav-category-active bg-accent text-foreground font-medium'
-                        : theme === 'simple-light'
-                        ? 'mobile-nav-category-active bg-neutral-900 text-white font-medium'
-                        : 'mobile-nav-category-active bg-primary text-white font-medium'
-                      : theme === 'simple-dark'
-                      ? 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'mobile-nav-category-active bg-primary text-primary-foreground font-medium'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   )}
                 >{category.name}</button>
@@ -120,7 +106,6 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
           </div>
         </div>
 
-        {/* 二级分类：随当前一级分类切换；只有存在二级分类时才显示 */}
         {mobileCategory && mobileCategory.subCategories.length > 0 && (
           <div className="overflow-x-auto flex items-center h-10 border-t scrollbar-none">
             <div className="flex px-4 min-w-max gap-2">
@@ -134,11 +119,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
                     className={cn(
                       'mobile-nav-subcategory-button whitespace-nowrap px-3 py-1 text-xs rounded-full transition-colors shrink-0',
                       isActive
-                        ? theme === 'simple-dark'
-                          ? 'mobile-nav-subcategory-active bg-accent text-foreground font-medium'
-                          : theme === 'simple-light'
-                          ? 'mobile-nav-subcategory-active bg-neutral-900 text-white font-medium'
-                          : 'mobile-nav-subcategory-active bg-primary text-white font-medium'
+                        ? 'mobile-nav-subcategory-active bg-primary text-primary-foreground font-medium'
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     )}
                   >{subCategory.name}</button>
@@ -169,16 +150,17 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
             return (
               <li key={category.id}>
                 <div className="flex flex-col">
-                  <button onClick={() => handleCategoryToggle(category.id)} className={cn(
-                    'nav-category-button w-full flex items-center justify-between px-4 py-2 rounded-lg transition-colors',
-                    isCategoryActive
-                      ? theme === 'simple-dark'
-                        ? 'nav-category-active bg-accent text-foreground font-medium'
-                        : theme === 'simple-light'
-                        ? 'nav-category-active bg-neutral-900 text-white font-medium'
-                        : 'nav-category-active bg-primary text-white font-medium'
-                      : isCategoryExpanded ? 'nav-category-expanded bg-accent' : 'hover:bg-accent/50'
-                  )}>
+                  <button
+                    onClick={() => handleCategoryToggle(category.id)}
+                    className={cn(
+                      'nav-category-button w-full flex items-center justify-between px-4 py-2 rounded-lg transition-colors',
+                      isCategoryActive
+                        ? 'nav-category-active bg-primary text-primary-foreground font-medium'
+                        : isCategoryExpanded
+                        ? 'nav-category-expanded bg-accent'
+                        : 'hover:bg-accent/50'
+                    )}
+                  >
                     <div className="flex items-center space-x-2"><IconComponent className="w-4 h-4" /><span>{category.name}</span></div>
                     <Icons.ChevronDown className={cn('w-4 h-4 transition-transform', isCategoryExpanded ? 'rotate-180' : '')} />
                   </button>
@@ -187,16 +169,15 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
                     <ul className="mt-1 ml-4 space-y-1">
                       {category.subCategories.map(subCategory => (
                         <li key={subCategory.id}>
-                          <button onClick={() => handleNavClick(category.id, subCategory.id)} className={cn(
-                            'nav-subcategory-button w-full text-left px-4 py-2 rounded-lg transition-colors text-sm',
-                            activeCategory === `${category.id}-${subCategory.id}`
-                              ? theme === 'simple-dark'
-                                ? 'nav-subcategory-active bg-accent text-foreground font-medium'
-                                : theme === 'simple-light'
-                                ? 'nav-subcategory-active bg-neutral-900 text-white font-medium'
-                                : 'nav-subcategory-active bg-primary text-white font-medium'
-                              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                          )}>{subCategory.name}</button>
+                          <button
+                            onClick={() => handleNavClick(category.id, subCategory.id)}
+                            className={cn(
+                              'nav-subcategory-button w-full text-left px-4 py-2 rounded-lg transition-colors text-sm',
+                              activeCategory === `${category.id}-${subCategory.id}`
+                                ? 'nav-subcategory-active bg-primary text-primary-foreground font-medium'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                            )}
+                          >{subCategory.name}</button>
                         </li>
                       ))}
                     </ul>
