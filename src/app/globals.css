@@ -150,19 +150,7 @@ html[data-theme="macintosh-1984"]::-webkit-scrollbar-track, html[data-theme="mac
 html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb { background: rgba(20,20,20,.42); border: 3px solid hsl(0 0% 88%); border-radius: 0; }
 html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb:hover { background: rgba(20,20,20,.68); }
 
-/* 赛博朋克主题切换器：仅补足实体背景，保持原有紫色视觉语言。 */
-[data-theme="cyberpunk-dark"] .theme-switcher-trigger {
-  background: hsl(232 36% 10%) !important;
-  border: 1px solid rgba(222, 87, 255, 0.62) !important;
-  color: hsl(286 100% 72%) !important;
-  box-shadow: 0 0 8px rgba(222, 87, 255, 0.18);
-}
-[data-theme="cyberpunk-dark"] .theme-switcher-trigger:hover {
-  background: hsl(232 34% 14%) !important;
-  border-color: rgba(222, 87, 255, 0.78) !important;
-  color: hsl(286 100% 76%) !important;
-  box-shadow: 0 0 10px rgba(222, 87, 255, 0.24);
-}
+/* 赛博朋克主题切换菜单：只修复菜单透明，触发图标保持原本的简洁样式。 */
 [data-theme="cyberpunk-dark"] .theme-switcher-menu {
   background: hsl(232 36% 9%) !important;
   border-color: rgba(222, 87, 255, 0.58) !important;
