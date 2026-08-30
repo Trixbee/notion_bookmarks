@@ -150,40 +150,36 @@ html[data-theme="macintosh-1984"]::-webkit-scrollbar-track, html[data-theme="mac
 html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb { background: rgba(20,20,20,.42); border: 3px solid hsl(0 0% 88%); border-radius: 0; }
 html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb:hover { background: rgba(20,20,20,.68); }
 
-/* 赛博朋克主题切换器：保留霓虹感，但避免按钮和菜单完全透明。 */
+/* 赛博朋克主题切换器：仅补足实体背景，保持原有紫色视觉语言。 */
 [data-theme="cyberpunk-dark"] .theme-switcher-trigger {
-  background: rgba(7, 8, 20, 0.82) !important;
-  border: 1px solid rgba(222, 87, 255, 0.72) !important;
+  background: hsl(232 36% 10%) !important;
+  border: 1px solid rgba(222, 87, 255, 0.62) !important;
   color: hsl(286 100% 72%) !important;
-  box-shadow: 0 0 10px rgba(222, 87, 255, 0.22), inset 0 0 10px rgba(222, 87, 255, 0.06);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 8px rgba(222, 87, 255, 0.18);
 }
 [data-theme="cyberpunk-dark"] .theme-switcher-trigger:hover {
-  background: rgba(12, 14, 31, 0.92) !important;
-  border-color: rgba(87, 244, 255, 0.82) !important;
-  color: hsl(180 100% 70%) !important;
-  box-shadow: 0 0 14px rgba(222, 87, 255, 0.34), 0 0 8px rgba(87, 244, 255, 0.22), inset 0 0 12px rgba(87, 244, 255, 0.06);
+  background: hsl(232 34% 14%) !important;
+  border-color: rgba(222, 87, 255, 0.78) !important;
+  color: hsl(286 100% 76%) !important;
+  box-shadow: 0 0 10px rgba(222, 87, 255, 0.24);
 }
 [data-theme="cyberpunk-dark"] .theme-switcher-menu {
-  background: rgba(7, 8, 20, 0.94) !important;
-  border-color: rgba(222, 87, 255, 0.64) !important;
-  box-shadow: 0 0 20px rgba(222, 87, 255, 0.24), 0 12px 30px rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: hsl(232 36% 9%) !important;
+  border-color: rgba(222, 87, 255, 0.58) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
 }
 [data-theme="cyberpunk-dark"] .theme-switcher-option {
   background: transparent;
 }
 [data-theme="cyberpunk-dark"] .theme-switcher-option:hover {
-  background: rgba(222, 87, 255, 0.12) !important;
-  color: hsl(180 100% 72%) !important;
+  background: rgba(222, 87, 255, 0.10) !important;
+  color: hsl(286 100% 76%) !important;
 }
 [data-theme="cyberpunk-dark"] .theme-switcher-option-active,
 [data-theme="cyberpunk-dark"] .theme-switcher-option-active:hover {
-  background: linear-gradient(90deg, rgba(222, 87, 255, 0.22), rgba(87, 244, 255, 0.12)) !important;
+  background: rgba(222, 87, 255, 0.16) !important;
   color: hsl(286 100% 76%) !important;
-  box-shadow: inset 3px 0 0 hsl(286 100% 65%);
+  box-shadow: none;
 }
 
 /* QWeather Icons */
