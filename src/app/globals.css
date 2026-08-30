@@ -4,428 +4,147 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    /* Tailwind 直接使用 var(--color)，因此变量必须是完整 CSS 颜色值。
+       这里同时作为 next-themes 首次 hydration 前的 simple-light 默认值。 */
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(222.2 47.4% 11.2%);
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(222.2 47.4% 11.2%);
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222.2 47.4% 11.2%);
+    --primary: hsl(222.2 47.4% 11.2%);
+    --primary-foreground: hsl(210 40% 98%);
+    --secondary: hsl(210 40% 96.1%);
+    --secondary-foreground: hsl(222.2 47.4% 11.2%);
+    --muted: hsl(210 40% 96.1%);
+    --muted-foreground: hsl(215.4 16.3% 46.9%);
+    --accent: hsl(210 40% 96.1%);
+    --accent-foreground: hsl(222.2 47.4% 11.2%);
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(0 0% 98%);
+    --border: hsl(214.3 31.8% 91.4%);
+    --input: hsl(214.3 31.8% 91.4%);
+    --ring: hsl(222.2 47.4% 11.2%);
     --radius: 0.75rem;
     --highlight-bg: rgba(0, 0, 0, 0.05);
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --background: hsl(240 10% 3.9%);
+    --foreground: hsl(0 0% 98%);
+    --card: hsl(240 10% 3.9%);
+    --card-foreground: hsl(240 10% 3.9%);
+    --popover: hsl(240 10% 3.9%);
+    --popover-foreground: hsl(0 0% 98%);
+    --primary: hsl(0 0% 98%);
+    --primary-foreground: hsl(240 5.9% 10%);
+    --secondary: hsl(240 3.7% 15.9%);
+    --secondary-foreground: hsl(0 0% 98%);
+    --muted: hsl(240 3.7% 15.9%);
+    --muted-foreground: hsl(240 5% 64.9%);
+    --accent: hsl(240 3.7% 15.9%);
+    --accent-foreground: hsl(0 0% 98%);
+    --destructive: hsl(0 62.8% 30.6%);
+    --destructive-foreground: hsl(0 0% 98%);
+    --border: hsl(240 3.7% 15.9%);
+    --input: hsl(240 3.7% 15.9%);
+    --ring: hsl(240 4.9% 83.9%);
     --highlight-bg: rgba(255, 255, 255, 0.05);
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
 }
 
 @keyframes highlight {
-  0% {
-    background-color: transparent;
-  }
-  20% {
-    background-color: hsl(var(--primary) / 0.1);
-  }
-  100% {
-    background-color: transparent;
-  }
+  0% { background-color: transparent; }
+  20% { background-color: color-mix(in srgb, var(--primary) 10%, transparent); }
+  100% { background-color: transparent; }
 }
 
-.highlight-section {
-  animation: highlight 1.5s ease-in-out;
-  border-radius: 0.5rem;
-  margin: -0.5rem;
-  padding: 0.5rem;
-}
+.highlight-section { animation: highlight 1.5s ease-in-out; border-radius: 0.5rem; margin: -0.5rem; padding: 0.5rem; }
+html { scroll-behavior: smooth; scroll-padding-top: 100px; max-width: 100vw; overflow-x: hidden; }
+section { transition: background-color 0.3s ease-out; }
+html, body { max-width: 100vw; overflow-x: hidden; }
+@layer utilities { .animate-fade-in { animation: fadeIn 0.5s ease-out; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 优化滚动行为 */
-html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 100px; /* 确保滚动时留出顶部空间 */
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+[data-theme="simple-light"] footer { background: var(--background); border-color: var(--border); }
 
-/* 添加平滑过渡效果 */
-section {
-  transition: background-color 0.3s ease-out;
-}
-
-html, body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-@layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Simple Light 页脚：显式使用主题背景，避免固定页脚出现透明观感。 */
-[data-theme="simple-light"] footer {
-  background: hsl(var(--background));
-  border-color: var(--border);
-}
-
-/* Simple Dark 桌面侧栏滚动条。
-   Chromium/Safari 保持现有 WebKit 尺寸与默认视觉；
-   Firefox 单独使用标准 scrollbar 属性，避免干扰 Chrome 的 hover。 */
-[data-theme="simple-dark"] .desktop-sidebar {
-  color-scheme: dark;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="simple-dark"] .desktop-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
-  }
-}
-
-[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: transparent;
-}
-
+[data-theme="simple-dark"] .desktop-sidebar { color-scheme: dark; }
+@supports not selector(::-webkit-scrollbar) { [data-theme="simple-dark"] .desktop-sidebar { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.18) transparent; } }
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-track,
 [data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-track-piece,
-[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-corner {
-  background: transparent;
-}
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-corner { background: transparent; }
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb { min-height: 36px; background: rgba(255,255,255,.14); border: 1px solid transparent; background-clip: padding-box; border-radius: 999px; }
+[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover { background: #8e8e8e; background-clip: padding-box; }
 
-[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  border-radius: 999px;
-}
-
-[data-theme="simple-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #8e8e8e;
-  background-clip: padding-box;
-}
-
-/* Simple Light 桌面侧栏滚动条：沿用 Simple Dark 的尺寸、轨道和交互结构，
-   仅切换为适合浅色背景的中性灰。 */
-[data-theme="simple-light"] .desktop-sidebar {
-  color-scheme: light;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="simple-light"] .desktop-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
-  }
-}
-
-[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: transparent;
-}
-
+[data-theme="simple-light"] .desktop-sidebar { color-scheme: light; }
+@supports not selector(::-webkit-scrollbar) { [data-theme="simple-light"] .desktop-sidebar { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.18) transparent; } }
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 [data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-track,
 [data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-track-piece,
-[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-corner {
-  background: transparent;
-}
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-corner { background: transparent; }
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-thumb { min-height: 36px; background: rgba(0,0,0,.14); border: 1px solid transparent; background-clip: padding-box; border-radius: 999px; }
+[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-thumb:hover { background: #8e8e8e; background-clip: padding-box; }
 
-[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  background: rgba(0, 0, 0, 0.14);
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  border-radius: 999px;
-}
-
-[data-theme="simple-light"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: #8e8e8e;
-  background-clip: padding-box;
-}
-
-/* Cyberpunk：保留统一尺寸，用低透明主题紫体现霓虹感，但不额外发光。 */
-[data-theme="cyberpunk-dark"] .desktop-sidebar {
-  color-scheme: dark;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="cyberpunk-dark"] .desktop-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(222, 87, 255, 0.32) transparent;
-  }
-}
-
-[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: transparent;
-}
-
+[data-theme="cyberpunk-dark"] .desktop-sidebar { color-scheme: dark; }
+@supports not selector(::-webkit-scrollbar) { [data-theme="cyberpunk-dark"] .desktop-sidebar { scrollbar-width: thin; scrollbar-color: rgba(222,87,255,.32) transparent; } }
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 [data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-track,
 [data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-track-piece,
-[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-corner {
-  background: transparent;
-}
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-corner { background: transparent; }
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-thumb { min-height: 36px; background: rgba(222,87,255,.22); border: 1px solid transparent; background-clip: padding-box; border-radius: 999px; }
+[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(222,87,255,.48); background-clip: padding-box; }
 
-[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  background: rgba(222, 87, 255, 0.22);
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  border-radius: 999px;
-}
-
-[data-theme="cyberpunk-dark"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(222, 87, 255, 0.48);
-  background-clip: padding-box;
-}
-
-/* Bauhaus：保持统一结构，使用克制的黑灰，避免和三原色主体争夺注意力。 */
-[data-theme="bauhaus-primary"] .desktop-sidebar {
-  color-scheme: light;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="bauhaus-primary"] .desktop-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(13, 13, 13, 0.30) transparent;
-  }
-}
-
-[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: transparent;
-}
-
+[data-theme="bauhaus-primary"] .desktop-sidebar { color-scheme: light; }
+@supports not selector(::-webkit-scrollbar) { [data-theme="bauhaus-primary"] .desktop-sidebar { scrollbar-width: thin; scrollbar-color: rgba(13,13,13,.30) transparent; } }
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 [data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-track,
 [data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-track-piece,
-[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-corner {
-  background: transparent;
-}
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-corner { background: transparent; }
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-thumb { min-height: 36px; background: rgba(13,13,13,.22); border: 1px solid transparent; background-clip: padding-box; border-radius: 999px; }
+[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(13,13,13,.55); background-clip: padding-box; }
 
-[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  background: rgba(13, 13, 13, 0.22);
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  border-radius: 999px;
-}
-
-[data-theme="bauhaus-primary"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(13, 13, 13, 0.55);
-  background-clip: padding-box;
-}
-
-/* Macintosh 1984：黑灰配色，并使用直角滑块呼应经典 GUI 的硬朗几何感。 */
-[data-theme="macintosh-1984"] .desktop-sidebar {
-  color-scheme: light;
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  [data-theme="macintosh-1984"] .desktop-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(20, 20, 20, 0.36) transparent;
-  }
-}
-
-[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: transparent;
-}
-
+[data-theme="macintosh-1984"] .desktop-sidebar { color-scheme: light; }
+@supports not selector(::-webkit-scrollbar) { [data-theme="macintosh-1984"] .desktop-sidebar { scrollbar-width: thin; scrollbar-color: rgba(20,20,20,.36) transparent; } }
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
 [data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-track,
 [data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-track-piece,
-[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-corner {
-  background: transparent;
-}
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-corner { background: transparent; }
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-thumb { min-height: 36px; background: rgba(20,20,20,.28); border: 1px solid transparent; background-clip: padding-box; border-radius: 0; }
+[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(20,20,20,.58); background-clip: padding-box; }
 
-[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  background: rgba(20, 20, 20, 0.28);
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  border-radius: 0;
-}
-
-[data-theme="macintosh-1984"] .desktop-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 20, 20, 0.58);
-  background-clip: padding-box;
-}
-
-/* 页面主滚动条：仅适配浏览器最右侧滚动条，不改变左侧 desktop-sidebar。 */
-html[data-theme="simple-light"] {
-  scrollbar-color: rgba(0, 0, 0, 0.30) #ffffff;
-}
-
-html[data-theme="simple-dark"] {
-  color-scheme: dark;
-  scrollbar-color: rgba(255, 255, 255, 0.30) #121212;
-}
-
-html[data-theme="cyberpunk-dark"] {
-  color-scheme: dark;
-  scrollbar-color: rgba(222, 87, 255, 0.40) hsl(232 40% 4%);
-}
-
-html[data-theme="bauhaus-primary"] {
-  scrollbar-color: rgba(13, 13, 13, 0.38) hsl(44 100% 97%);
-}
-
-html[data-theme="macintosh-1984"] {
-  scrollbar-color: rgba(20, 20, 20, 0.48) hsl(0 0% 88%);
-}
-
-html[data-theme]::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-html[data-theme="simple-light"]::-webkit-scrollbar-track,
-html[data-theme="simple-light"]::-webkit-scrollbar-corner {
-  background: #ffffff;
-}
-
-html[data-theme="simple-light"]::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.28);
-  border: 3px solid #ffffff;
-  border-radius: 999px;
-}
-
-html[data-theme="simple-light"]::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.46);
-}
-
-html[data-theme="simple-dark"]::-webkit-scrollbar-track,
-html[data-theme="simple-dark"]::-webkit-scrollbar-corner {
-  background: #121212;
-}
-
-html[data-theme="simple-dark"]::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.28);
-  border: 3px solid #121212;
-  border-radius: 999px;
-}
-
-html[data-theme="simple-dark"]::-webkit-scrollbar-thumb:hover {
-  background: #8e8e8e;
-}
-
-html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-track,
-html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-corner {
-  background: hsl(232 40% 4%);
-}
-
-html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-thumb {
-  background: rgba(222, 87, 255, 0.34);
-  border: 3px solid hsl(232 40% 4%);
-  border-radius: 999px;
-}
-
-html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-thumb:hover {
-  background: rgba(222, 87, 255, 0.58);
-}
-
-html[data-theme="bauhaus-primary"]::-webkit-scrollbar-track,
-html[data-theme="bauhaus-primary"]::-webkit-scrollbar-corner {
-  background: hsl(44 100% 97%);
-}
-
-html[data-theme="bauhaus-primary"]::-webkit-scrollbar-thumb {
-  background: rgba(13, 13, 13, 0.34);
-  border: 3px solid hsl(44 100% 97%);
-  border-radius: 999px;
-}
-
-html[data-theme="bauhaus-primary"]::-webkit-scrollbar-thumb:hover {
-  background: rgba(13, 13, 13, 0.58);
-}
-
-html[data-theme="macintosh-1984"]::-webkit-scrollbar-track,
-html[data-theme="macintosh-1984"]::-webkit-scrollbar-corner {
-  background: hsl(0 0% 88%);
-}
-
-html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb {
-  background: rgba(20, 20, 20, 0.42);
-  border: 3px solid hsl(0 0% 88%);
-  border-radius: 0;
-}
-
-html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb:hover {
-  background: rgba(20, 20, 20, 0.68);
-}
+html[data-theme="simple-light"] { scrollbar-color: rgba(0,0,0,.30) #fff; }
+html[data-theme="simple-dark"] { color-scheme: dark; scrollbar-color: rgba(255,255,255,.30) #121212; }
+html[data-theme="cyberpunk-dark"] { color-scheme: dark; scrollbar-color: rgba(222,87,255,.40) hsl(232 40% 4%); }
+html[data-theme="bauhaus-primary"] { scrollbar-color: rgba(13,13,13,.38) hsl(44 100% 97%); }
+html[data-theme="macintosh-1984"] { scrollbar-color: rgba(20,20,20,.48) hsl(0 0% 88%); }
+html[data-theme]::-webkit-scrollbar { width: 12px; height: 12px; }
+html[data-theme="simple-light"]::-webkit-scrollbar-track, html[data-theme="simple-light"]::-webkit-scrollbar-corner { background: #fff; }
+html[data-theme="simple-light"]::-webkit-scrollbar-thumb { background: rgba(0,0,0,.28); border: 3px solid #fff; border-radius: 999px; }
+html[data-theme="simple-light"]::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.46); }
+html[data-theme="simple-dark"]::-webkit-scrollbar-track, html[data-theme="simple-dark"]::-webkit-scrollbar-corner { background: #121212; }
+html[data-theme="simple-dark"]::-webkit-scrollbar-thumb { background: rgba(255,255,255,.28); border: 3px solid #121212; border-radius: 999px; }
+html[data-theme="simple-dark"]::-webkit-scrollbar-thumb:hover { background: #8e8e8e; }
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-track, html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-corner { background: hsl(232 40% 4%); }
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-thumb { background: rgba(222,87,255,.34); border: 3px solid hsl(232 40% 4%); border-radius: 999px; }
+html[data-theme="cyberpunk-dark"]::-webkit-scrollbar-thumb:hover { background: rgba(222,87,255,.58); }
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-track, html[data-theme="bauhaus-primary"]::-webkit-scrollbar-corner { background: hsl(44 100% 97%); }
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-thumb { background: rgba(13,13,13,.34); border: 3px solid hsl(44 100% 97%); border-radius: 999px; }
+html[data-theme="bauhaus-primary"]::-webkit-scrollbar-thumb:hover { background: rgba(13,13,13,.58); }
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-track, html[data-theme="macintosh-1984"]::-webkit-scrollbar-corner { background: hsl(0 0% 88%); }
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb { background: rgba(20,20,20,.42); border: 3px solid hsl(0 0% 88%); border-radius: 0; }
+html[data-theme="macintosh-1984"]::-webkit-scrollbar-thumb:hover { background: rgba(20,20,20,.68); }
 
 /* QWeather Icons */
 @font-face {
   font-family: 'qweather-icons';
-  src: url('/fonts/qweather-icons.woff2') format('woff2'),
-       url('/fonts/qweather-icons.woff') format('woff'),
-       url('/fonts/qweather-icons.ttf') format('truetype');
-  font-display: block;
-}
-
-[class^="qi-"], [class*=" qi-"] {
-  font-family: 'qweather-icons' !important;
-  speak: none;
-  font-style: normal;
+  src: url('/fonts/qweather-icons.woff2') format('woff2');
   font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
+  font-style: normal;
+  font-display: swap;
 }
