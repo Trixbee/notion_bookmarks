@@ -44,14 +44,8 @@ export const getLinks = cache(async () => {
                 database_id: databaseId,
                 start_cursor: nextCursor,
                 sorts: [
-                    {
-                        property: 'category1',
-                        direction: 'ascending',
-                    },
-                    {
-                        property: 'category2',
-                        direction: 'ascending',
-                    },
+                    { property: 'category1', direction: 'ascending' },
+                    { property: 'category2', direction: 'ascending' },
                 ],
             });
 
@@ -79,20 +73,12 @@ export const getLinks = cache(async () => {
             const aHasOrder = a.order !== null;
             const bHasOrder = b.order !== null;
 
-            if (aHasOrder !== bHasOrder) {
-                return aHasOrder ? -1 : 1;
-            }
-
-            if (aHasOrder && bHasOrder && a.order !== b.order) {
-                return a.order! - b.order!;
-            }
+            if (aHasOrder !== bHasOrder) return aHasOrder ? -1 : 1;
+            if (aHasOrder && bHasOrder && a.order !== b.order) return a.order! - b.order!;
 
             const aIsTop = a.tags.includes('力荐👍');
             const bIsTop = b.tags.includes('力荐👍');
-
-            if (aIsTop !== bIsTop) {
-                return aIsTop ? -1 : 1;
-            }
+            if (aIsTop !== bIsTop) return aIsTop ? -1 : 1;
 
             return new Date(b.created).getTime() - new Date(a.created).getTime();
         });
@@ -100,7 +86,9 @@ export const getLinks = cache(async () => {
         return allLinks;
     } catch (error) {
         console.error('Error fetching links:', error);
-        return [];
+        // 不把临时 Notion 故障转换成“空站点”。让错误继续向上抛出，
+        // ISR 在已有页面时可以继续保留上一份成功生成的内容。
+        throw error;
     }
 });
 
@@ -116,19 +104,16 @@ export const getWebsiteConfig = cache(async () => {
         response.results.forEach((page) => {
             if (!isNotionConfigPage(page)) return;
             const item = getConfigItem(page);
-            if (item) {
-                configMap[item.key] = item.value;
-            }
+            if (item) configMap[item.key] = item.value;
         });
 
-        // 获取配置数据库页面的图标作为网站图标
         const database = await notion.databases.retrieve({
             database_id: envConfig.NOTION_WEBSITE_CONFIG_ID!
         }) as GetDatabaseResponse;
 
         let favicon = '/favicon.ico';
-
         const fullDatabase = database as DatabaseObjectResponse;
+
         if (fullDatabase.icon) {
             if (fullDatabase.icon.type === 'emoji') {
                 favicon = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${fullDatabase.icon.emoji}</text></svg>`;
@@ -161,7 +146,7 @@ export const getWebsiteConfig = cache(async () => {
 
         return config;
     } catch (error) {
-        // 配置数据库短暂不可用时不让整个站点失败，使用安全默认值继续渲染。
+        // 配置不是主内容，短暂不可用时用安全默认值继续渲染。
         console.error('获取网站配置失败，已使用默认配置:', error);
         return { ...fallbackWebsiteConfig };
     }
@@ -169,25 +154,17 @@ export const getWebsiteConfig = cache(async () => {
 
 export const getCategories = cache(async (): Promise<Category[]> => {
     const databaseId = envConfig.NOTION_CATEGORIES_DB_ID;
-
-    if (!databaseId) {
-        return [];
-    }
+    if (!databaseId) return [];
 
     try {
         const response = await notion.databases.query({
             database_id: databaseId,
             filter: {
                 property: 'Enabled',
-                checkbox: {
-                    equals: true
-                }
+                checkbox: { equals: true }
             },
             sorts: [
-                {
-                    property: 'Order',
-                    direction: 'ascending',
-                },
+                { property: 'Order', direction: 'ascending' },
             ],
         });
 
@@ -196,8 +173,9 @@ export const getCategories = cache(async (): Promise<Category[]> => {
             .map(toCategory);
 
         return categories.sort((a, b) => a.order - b.order);
-    } catch (err) {
-        console.error('获取分类失败:', err);
-        return [];
+    } catch (error) {
+        console.error('获取分类失败:', error);
+        // 与 links 一致：内容源故障时让 ISR 保留上一份成功页面，而不是生成空导航。
+        throw error;
     }
 });
