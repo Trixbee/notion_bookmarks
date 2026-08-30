@@ -2,18 +2,11 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   images: {
-    // 禁用图片优化以避免付费服务
+    // Keep image optimization disabled: link icons are loaded directly from their source.
     unoptimized: true,
   },
-
-  // 优化资源加载
   experimental: {
     optimizeCss: true,
-  },
-  // 优化预加载
-  onDemandEntries: {
-    maxInactiveAge: 25 * 1000,
-    pagesBufferLength: 2,
   },
 };
 
