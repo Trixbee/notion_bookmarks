@@ -7,16 +7,15 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import {
   FALLBACK_ICON_SRC,
-  ICON_LOAD_TIMEOUT_MS,
   getFailedIconState,
   getInitialIconState,
   getLoadedIconState,
-  getTimedOutIconState,
 } from '@/lib/link-icon';
 
 interface LinkCardProps {
   link: Link;
   className?: string;
+  priority?: boolean;
 }
 
 function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: number; y: number }) {
@@ -36,20 +35,19 @@ function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: n
 const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   src,
   alt,
-  hidden,
+  priority,
   onLoad,
   onError
 }: {
   src: string;
   alt: string;
-  hidden: boolean;
+  priority: boolean;
   onLoad?: () => void;
   onError: () => void;
 }) {
   const imageRef = useRef<HTMLImageElement>(null);
 
-  // 对缓存中已完成的图片只检查一次；其余情况完全依赖原生 load/error 事件，
-  // 避免每张卡片创建长达 30 秒的轮询定时器。
+  // 缓存图片可能在 React 绑定事件前就已完成，只做一次同步检查即可。
   useEffect(() => {
     const image = imageRef.current;
     if (!image?.complete) return;
@@ -65,26 +63,32 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
       ref={imageRef}
       src={src}
       alt={alt}
-      className={cn(
-        'w-full h-full object-contain transition-opacity duration-200',
-        hidden ? 'opacity-0' : 'opacity-100'
-      )}
+      className="w-full h-full object-contain"
       onLoad={onLoad}
       onError={onError}
-      loading="lazy"
-      decoding="async"
-      fetchPriority="low"
+      loading={priority ? 'eager' : 'lazy'}
+      decoding={priority ? 'sync' : 'async'}
+      fetchPriority={priority ? 'high' : 'low'}
+      referrerPolicy="no-referrer"
     />
   );
-}, (prev, next) => prev.src === next.src && prev.alt === next.alt && prev.hidden === next.hidden);
+}, (prev, next) => (
+  prev.src === next.src &&
+  prev.alt === next.alt &&
+  prev.priority === next.priority
+));
 
-const LinkCard = memo(function LinkCard({ link, className }: LinkCardProps) {
+const LinkCard = memo(function LinkCard({ link, className, priority = false }: LinkCardProps) {
   const [titleTooltip, setTitleTooltip] = useState({ show: false, x: 0, y: 0 });
   const [descTooltip, setDescTooltip] = useState({ show: false, x: 0, y: 0 });
   const [iconState, setIconState] = useState(() => getInitialIconState(link));
 
   const handleImageError = useCallback(() => {
-    setIconState(getFailedIconState());
+    setIconState((state) => {
+      // fallback 自己若也失败，不再反复切换状态。
+      if (state.src === FALLBACK_ICON_SRC) return state;
+      return getFailedIconState();
+    });
   }, []);
 
   const handleImageLoad = useCallback(() => {
@@ -106,21 +110,6 @@ const LinkCard = memo(function LinkCard({ link, className }: LinkCardProps) {
     setIconState(getInitialIconState(link));
   }, [link]);
 
-  // 保留一个超时保护：慢图标 4 秒后先显示 fallback；若原图随后加载成功，
-  // 原生 onLoad 会自动恢复原图。这里不再额外轮询 DOM 状态。
-  useEffect(() => {
-    if (iconState.isLoaded || iconState.src === FALLBACK_ICON_SRC) return;
-
-    const timeoutId = window.setTimeout(() => {
-      setIconState((state) => {
-        if (state.isLoaded || state.src === FALLBACK_ICON_SRC) return state;
-        return getTimedOutIconState(state);
-      });
-    }, ICON_LOAD_TIMEOUT_MS);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [iconState.isLoaded, iconState.src]);
-
   return (
     <>
       <a
@@ -138,23 +127,16 @@ const LinkCard = memo(function LinkCard({ link, className }: LinkCardProps) {
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="relative w-10 h-10 rounded-xl overflow-hidden transition-all shrink-0 bg-muted/50 p-1.5 border border-border/50">
               <div className="icon-container relative w-full h-full">
-                {iconState.showFallback && (
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 z-10 bg-muted bg-center bg-contain bg-no-repeat"
-                    style={{ backgroundImage: `url(${FALLBACK_ICON_SRC})` }}
-                  />
-                )}
                 <OptimisedLinkIcon
                   src={iconState.src}
                   alt={link.name}
-                  hidden={iconState.showFallback}
+                  priority={priority}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
 
                 {iconState.showSpinner && (
-                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-muted/20">
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
                     <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                   </div>
                 )}
@@ -244,6 +226,7 @@ const LinkCard = memo(function LinkCard({ link, className }: LinkCardProps) {
     prev.link.iconlink === next.link.iconlink &&
     prevTags.length === nextTags.length &&
     prevTags.every((tag, index) => tag === nextTags[index]) &&
+    prev.priority === next.priority &&
     prev.className === next.className
   );
 });
