@@ -19,8 +19,6 @@ const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
   hour12: false
 }).replace(/\//g, '-');
 
-// 只提升真正接近首屏的图标，避免一次把过多 Notion 图片标成 high priority
-// 导致网络竞争和图片同步解码造成的滚动卡顿。
 const PRIORITY_ICON_COUNT = 10;
 
 export default function LinkContainer({
@@ -28,7 +26,6 @@ export default function LinkContainer({
   enabledCategories,
   categories,
 }: LinkContainerProps) {
-  // 这部分只需要在服务端生成 HTML，不再为整棵分类结构做客户端 hydration。
   const linksByCategory = initialLinks.reduce((acc, link) => {
     const cat1 = link.category1;
     const cat2 = link.category2;
@@ -56,12 +53,16 @@ export default function LinkContainer({
 
   return (
     <div className="space-y-16 pb-12 w-full min-w-0">
-      {categories.map((category) => {
+      {categories.map((category, categoryIndex) => {
         const categoryLinks = linksByCategory[category.name];
         if (!categoryLinks) return null;
 
         return (
-          <section key={category.id} id={category.id} className="space-y-8">
+          <section
+            key={category.id}
+            id={category.id}
+            className={`space-y-8${categoryIndex === 0 ? ' first-category-section' : ''}`}
+          >
             <div className="section-heading flex items-center gap-3 pb-2 border-b">
               {category.iconName && Icons[category.iconName as keyof typeof Icons] ? (
                 <div className="section-heading-icon w-7 h-7 p-1 rounded-lg bg-primary/5 text-primary">
