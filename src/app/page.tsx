@@ -14,25 +14,37 @@ export default async function HomePage() {
   ]);
 
   const enabledCategories = new Set(notionCategories.map(cat => cat.name));
-  const processedLinks = links
-    .map(link => ({ ...link, category1: link.category1 || '未分类', category2: link.category2 || '默认' }))
-    .filter(link => enabledCategories.has(link.category1));
+  const subCategoriesByCategory = new Map<string, Set<string>>();
+  const processedLinks = [] as typeof links;
 
-  const categoriesWithLinks = new Set(processedLinks.map(link => link.category1));
-  const activeCategories = notionCategories.filter(category => categoriesWithLinks.has(category.name));
-
-  const categoriesWithSubs = activeCategories.map(category => {
-    const subCategories = new Set(
-      processedLinks.filter(link => link.category1 === category.name).map(link => link.category2)
-    );
-    return {
-      ...category,
-      subCategories: Array.from(subCategories).map(subCat => ({
-        id: subCat.toLowerCase().replace(/\s+/g, '-'),
-        name: subCat
-      }))
+  // 单次遍历完成兜底分类、启用分类过滤和二级分类索引，
+  // 避免之后每个一级分类再次扫描全部链接。
+  for (const link of links) {
+    const normalizedLink = {
+      ...link,
+      category1: link.category1 || '未分类',
+      category2: link.category2 || '默认',
     };
-  });
+
+    if (!enabledCategories.has(normalizedLink.category1)) continue;
+
+    processedLinks.push(normalizedLink);
+    let subCategories = subCategoriesByCategory.get(normalizedLink.category1);
+    if (!subCategories) {
+      subCategories = new Set<string>();
+      subCategoriesByCategory.set(normalizedLink.category1, subCategories);
+    }
+    subCategories.add(normalizedLink.category2);
+  }
+
+  const activeCategories = notionCategories.filter(category => subCategoriesByCategory.has(category.name));
+  const categoriesWithSubs = activeCategories.map(category => ({
+    ...category,
+    subCategories: Array.from(subCategoriesByCategory.get(category.name) ?? []).map(subCat => ({
+      id: subCat.toLowerCase().replace(/\s+/g, '-'),
+      name: subCat,
+    })),
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/20">
