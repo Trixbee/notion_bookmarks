@@ -33,6 +33,8 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
   const lastScrollYRef = useRef(0)
   const scrollDirectionDistanceRef = useRef(0)
   const lastScrollDirectionRef = useRef<'up' | 'down' | null>(null)
+  const suppressAutoHideRef = useRef(false)
+  const suppressAutoHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const mobileCategory = useMemo(
     () => categories.find(category => category.id === mobileCategoryId) || categories[0],
@@ -69,6 +71,8 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     setIsMobileSubNavVisible(true)
     scrollDirectionDistanceRef.current = 0
     lastScrollDirectionRef.current = null
+    suppressAutoHideRef.current = true
+    if (suppressAutoHideTimerRef.current) clearTimeout(suppressAutoHideTimerRef.current)
     handleNavClick(categoryId)
   }, [handleNavClick])
 
@@ -93,6 +97,18 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
       const currentScrollY = Math.max(window.scrollY, 0)
       const delta = currentScrollY - lastScrollYRef.current
       lastScrollYRef.current = currentScrollY
+
+      if (suppressAutoHideRef.current) {
+        setIsMobileSubNavVisible(true)
+        scrollDirectionDistanceRef.current = 0
+        lastScrollDirectionRef.current = null
+        if (suppressAutoHideTimerRef.current) clearTimeout(suppressAutoHideTimerRef.current)
+        suppressAutoHideTimerRef.current = setTimeout(() => {
+          suppressAutoHideRef.current = false
+          lastScrollYRef.current = Math.max(window.scrollY, 0)
+        }, 180)
+        return
+      }
 
       if (currentScrollY <= 20) {
         setIsMobileSubNavVisible(true)
@@ -120,7 +136,10 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (suppressAutoHideTimerRef.current) clearTimeout(suppressAutoHideTimerRef.current)
+    }
   }, [])
 
   return (
