@@ -105,7 +105,12 @@ const Navigation = memo(function Navigation({
       {/* =========================
           移动端顶部导航
       ========================== */}
-      <nav className="lg:hidden fixed top-0 left-0 right-0 z-20 bg-background border-b">
+      <nav
+        className={cn(
+          'lg:hidden fixed top-0 left-0 right-0 z-20 border-b',
+          theme === 'simple-light' ? 'bg-white' : 'bg-background'
+        )}
+      >
         <div className="flex items-center justify-between px-4 h-16">
           <div className="flex items-center space-x-2">
             <img
