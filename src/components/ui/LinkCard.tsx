@@ -36,11 +36,13 @@ function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: n
 const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   src,
   alt,
+  hidden,
   onLoad,
   onError
 }: {
   src: string;
   alt: string;
+  hidden: boolean;
   onLoad?: () => void;
   onError: () => void;
 }) {
@@ -63,7 +65,10 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
       ref={imageRef}
       src={src}
       alt={alt}
-      className="w-full h-full object-contain transition-opacity duration-200"
+      className={cn(
+        'w-full h-full object-contain transition-opacity duration-200',
+        hidden ? 'opacity-0' : 'opacity-100'
+      )}
       onLoad={onLoad}
       onError={onError}
       loading="lazy"
@@ -71,7 +76,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
       fetchPriority="low"
     />
   );
-}, (prev, next) => prev.src === next.src && prev.alt === next.alt);
+}, (prev, next) => prev.src === next.src && prev.alt === next.alt && prev.hidden === next.hidden);
 
 const LinkCard = memo(function LinkCard({ link, className }: LinkCardProps) {
   const [titleTooltip, setTitleTooltip] = useState({ show: false, x: 0, y: 0 });
@@ -136,19 +141,20 @@ const LinkCard = memo(function LinkCard({ link, className }: LinkCardProps) {
                 {iconState.showFallback && (
                   <div
                     aria-hidden="true"
-                    className="absolute inset-0 bg-center bg-contain bg-no-repeat opacity-70"
+                    className="absolute inset-0 z-10 bg-muted bg-center bg-contain bg-no-repeat"
                     style={{ backgroundImage: `url(${FALLBACK_ICON_SRC})` }}
                   />
                 )}
                 <OptimisedLinkIcon
                   src={iconState.src}
                   alt={link.name}
+                  hidden={iconState.showFallback}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
 
                 {iconState.showSpinner && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
+                  <div className="absolute inset-0 z-20 flex items-center justify-center bg-muted/20">
                     <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
                   </div>
                 )}
