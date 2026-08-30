@@ -1,5 +1,4 @@
 import "./globals.css"
-import "qweather-icons/font/qweather-icons.css"
 import "@/themes/theme.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/ui/ThemeProvider"
@@ -22,7 +21,7 @@ export const viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = mergeConfig(await getWebsiteConfig())
-  
+
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
     title: {
@@ -71,7 +70,6 @@ export default async function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <Clarity clarityId={config.CLARITY_ID || ''} />
         <GoogleAnalytics gaId={config.GA_ID || ''} />
       </head>
