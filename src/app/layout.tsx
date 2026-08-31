@@ -1,6 +1,7 @@
 import "@/themes/bauhaus/style.css"
 import "@/themes/macintosh-1984/style.css"
 import "@/themes/theme.css"
+import "@/themes/cyberpunk/typography.css"
 import "./globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/ui/ThemeProvider"
