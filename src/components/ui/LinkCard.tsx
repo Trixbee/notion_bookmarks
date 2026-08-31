@@ -38,6 +38,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   alt,
   eager,
   loaded,
+  retryKey,
   onLoad,
   onError
 }: {
@@ -45,6 +46,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   alt: string;
   eager: boolean;
   loaded: boolean;
+  retryKey: number;
   onLoad?: () => void;
   onError: () => void;
 }) {
@@ -56,7 +58,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
 
     if (image.naturalWidth > 0) onLoad?.();
     else onError();
-  }, [src, onLoad, onError]);
+  }, [src, retryKey, onLoad, onError]);
 
   return (
     <>
@@ -71,6 +73,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        key={`${src}-${retryKey}`}
         ref={imageRef}
         src={src}
         alt={alt}
@@ -91,28 +94,53 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   prev.src === next.src &&
   prev.alt === next.alt &&
   prev.eager === next.eager &&
-  prev.loaded === next.loaded
+  prev.loaded === next.loaded &&
+  prev.retryKey === next.retryKey
 ));
 
 const LinkCard = memo(function LinkCard({ link, className, eager = false }: LinkCardProps) {
   const [titleTooltip, setTitleTooltip] = useState({ show: false, x: 0, y: 0 });
   const [descTooltip, setDescTooltip] = useState({ show: false, x: 0, y: 0 });
   const [iconState, setIconState] = useState(() => getInitialIconState(link));
+  const [iconRetryKey, setIconRetryKey] = useState(0);
   const previousIconSourceRef = useRef(getLinkIconUrl(link));
+  const iconRetryCountRef = useRef(0);
+  const iconRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearIconRetryTimer = useCallback(() => {
+    if (iconRetryTimerRef.current !== null) {
+      clearTimeout(iconRetryTimerRef.current);
+      iconRetryTimerRef.current = null;
+    }
+  }, []);
 
   const handleImageError = useCallback(() => {
+    if (iconState.src === FALLBACK_ICON_SRC) return;
+
+    if (iconRetryCountRef.current === 0) {
+      iconRetryCountRef.current = 1;
+      clearIconRetryTimer();
+      iconRetryTimerRef.current = setTimeout(() => {
+        iconRetryTimerRef.current = null;
+        setIconRetryKey((key) => key + 1);
+      }, 350);
+      return;
+    }
+
+    clearIconRetryTimer();
     setIconState((state) => {
       if (state.src === FALLBACK_ICON_SRC) return state;
       return getFailedIconState();
     });
-  }, []);
+  }, [iconState.src, clearIconRetryTimer]);
 
   const handleImageLoad = useCallback(() => {
+    clearIconRetryTimer();
     setIconState((state) => {
       if (state.isLoaded) return state;
       return getLoadedIconState(state);
     });
-  }, []);
+  }, [clearIconRetryTimer]);
 
   const handleMouseEnter = useCallback((event: React.MouseEvent<HTMLElement>, isTitle: boolean) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -129,9 +157,14 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
     const currentSource = getLinkIconUrl(link);
     if (previousIconSourceRef.current === currentSource) return;
 
+    clearIconRetryTimer();
+    iconRetryCountRef.current = 0;
+    setIconRetryKey(0);
     previousIconSourceRef.current = currentSource;
     setIconState(getInitialIconState(link));
-  }, [link.iconfile, link.iconlink, link]);
+  }, [link.iconfile, link.iconlink, link, clearIconRetryTimer]);
+
+  useEffect(() => () => clearIconRetryTimer(), [clearIconRetryTimer]);
 
   return (
     <>
@@ -155,6 +188,7 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
                   alt={link.name}
                   eager={eager}
                   loaded={iconState.isLoaded}
+                  retryKey={iconRetryKey}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
