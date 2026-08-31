@@ -198,7 +198,7 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
 
             <div className="flex-1 min-w-0 relative">
               <div className="relative" onMouseEnter={(e) => handleMouseEnter(e, true)} onMouseLeave={() => handleMouseLeave(true)}>
-                <h3 className="text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 pr-6">{link.name}</h3>
+                <h3 className="link-card-title text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 pr-6">{link.name}</h3>
               </div>
               <div className="absolute right-0 top-1/2 -translate-y-1/2">
                 <IconExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
