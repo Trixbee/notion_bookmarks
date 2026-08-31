@@ -73,7 +73,7 @@ export default function LinkContainer({
                   <div key={sectionId} id={sectionId} className="space-y-4">
                     <div className="flex items-center space-x-2">
                       <div className="w-1 h-1 rounded-full bg-primary"></div>
-                      <h3 className="text-lg font-medium text-foreground/90">{subCategory}</h3>
+                      <h3 className="subcategory-heading-title text-lg font-medium text-foreground/90">{subCategory}</h3>
                       <div className="text-sm text-muted-foreground">({links.length})</div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
