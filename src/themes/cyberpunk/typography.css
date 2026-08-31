@@ -1,0 +1,8 @@
+/* Content typography overrides for the active cyberpunk theme.
+ * Keep brand/category labels readable without changing the rest of the theme. */
+[data-theme="cyberpunk-dark"] .section-heading-title,
+[data-theme="cyberpunk-dark"] .subcategory-heading-title,
+[data-theme="cyberpunk-dark"] .link-card-title {
+  text-transform: none !important;
+  font-weight: 500 !important;
+}
