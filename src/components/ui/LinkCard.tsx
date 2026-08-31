@@ -19,6 +19,8 @@ interface LinkCardProps {
   eager?: boolean;
 }
 
+const ICON_RETRY_DELAYS = [1000, 2000] as const;
+
 function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: number; y: number }) {
   if (!show || typeof window === 'undefined' || typeof document === 'undefined') return null;
 
@@ -115,24 +117,23 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
   }, []);
 
   const handleImageError = useCallback(() => {
-    if (iconState.src === FALLBACK_ICON_SRC) return;
+    if (iconState.src === FALLBACK_ICON_SRC || iconRetryTimerRef.current !== null) return;
 
-    if (iconRetryCountRef.current === 0) {
-      iconRetryCountRef.current = 1;
-      clearIconRetryTimer();
+    const retryDelay = ICON_RETRY_DELAYS[iconRetryCountRef.current];
+    if (retryDelay !== undefined) {
+      iconRetryCountRef.current += 1;
       iconRetryTimerRef.current = setTimeout(() => {
         iconRetryTimerRef.current = null;
         setIconRetryKey((key) => key + 1);
-      }, 350);
+      }, retryDelay);
       return;
     }
 
-    clearIconRetryTimer();
     setIconState((state) => {
       if (state.src === FALLBACK_ICON_SRC) return state;
       return getFailedIconState();
     });
-  }, [iconState.src, clearIconRetryTimer]);
+  }, [iconState.src]);
 
   const handleImageLoad = useCallback(() => {
     clearIconRetryTimer();
