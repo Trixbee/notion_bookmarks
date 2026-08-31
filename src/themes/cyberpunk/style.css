@@ -24,9 +24,12 @@
   font-weight: 700;
 }
 
-/* 网站名称保持品牌原始大小写 */
-[data-theme="cyberpunk-dark"] a.group h3 {
-  text-transform: none;
+/* 内容分类与网站名称保持原始大小写，并降低过重字重 */
+[data-theme="cyberpunk-dark"] .section-heading-title,
+[data-theme="cyberpunk-dark"] .subcategory-heading-title,
+[data-theme="cyberpunk-dark"] .link-card-title {
+  text-transform: none !important;
+  font-weight: 500 !important;
 }
 
 [data-theme="cyberpunk-dark"] h1 { font-size: 2.25rem; }
