@@ -1,21 +1,35 @@
-/* Content typography overrides for the active cyberpunk theme.
- * Keep content readable without changing the rest of the theme. */
-[data-theme="cyberpunk-dark"] .section-heading-title {
+/* Keep cyberpunk visual effects while matching the site's normal content typography. */
+[data-theme="cyberpunk-dark"] {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+[data-theme="cyberpunk-dark"] .section-heading-title,
+[data-theme="cyberpunk-dark"] .subcategory-heading-title,
+[data-theme="cyberpunk-dark"] .link-card-title {
+  font-family: inherit !important;
   text-transform: none !important;
-  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  margin-bottom: 0 !important;
+}
+
+[data-theme="cyberpunk-dark"] .section-heading-title {
+  font-weight: 700 !important;
 }
 
 [data-theme="cyberpunk-dark"] .subcategory-heading-title,
 [data-theme="cyberpunk-dark"] .link-card-title {
-  text-transform: none !important;
   font-weight: 500 !important;
 }
 
-/* Website descriptions are body copy, not headings. */
-[data-theme="cyberpunk-dark"] .link-card-title + * {
-  font-weight: 400;
+[data-theme="cyberpunk-dark"] a.group {
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
 }
 
 [data-theme="cyberpunk-dark"] a.group p {
   font-weight: 400 !important;
+  letter-spacing: normal !important;
 }
