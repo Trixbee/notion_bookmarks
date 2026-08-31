@@ -1,8 +1,21 @@
 /* Content typography overrides for the active cyberpunk theme.
- * Keep brand/category labels readable without changing the rest of the theme. */
-[data-theme="cyberpunk-dark"] .section-heading-title,
+ * Keep content readable without changing the rest of the theme. */
+[data-theme="cyberpunk-dark"] .section-heading-title {
+  text-transform: none !important;
+  font-weight: 600 !important;
+}
+
 [data-theme="cyberpunk-dark"] .subcategory-heading-title,
 [data-theme="cyberpunk-dark"] .link-card-title {
   text-transform: none !important;
   font-weight: 500 !important;
+}
+
+/* Website descriptions are body copy, not headings. */
+[data-theme="cyberpunk-dark"] .link-card-title + * {
+  font-weight: 400;
+}
+
+[data-theme="cyberpunk-dark"] a.group p {
+  font-weight: 400 !important;
 }
