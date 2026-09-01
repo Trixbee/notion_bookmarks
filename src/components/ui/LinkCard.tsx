@@ -20,6 +20,41 @@ interface LinkCardProps {
 }
 
 const ICON_RETRY_DELAYS = [1000, 2000] as const;
+const FRESH_ICON_CACHE_MS = 30_000;
+
+type FreshIconMap = Record<string, string>;
+
+let freshIconRequest: Promise<FreshIconMap> | null = null;
+let freshIconCache: { icons: FreshIconMap; expiresAt: number } | null = null;
+
+async function fetchFreshIconMap(): Promise<FreshIconMap> {
+  const now = Date.now();
+  if (freshIconCache && freshIconCache.expiresAt > now) {
+    return freshIconCache.icons;
+  }
+
+  if (!freshIconRequest) {
+    freshIconRequest = fetch('/api/icons', { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Icon refresh failed with ${response.status}`);
+        }
+
+        const payload = await response.json() as { icons?: FreshIconMap };
+        const icons = payload.icons ?? {};
+        freshIconCache = {
+          icons,
+          expiresAt: Date.now() + FRESH_ICON_CACHE_MS,
+        };
+        return icons;
+      })
+      .finally(() => {
+        freshIconRequest = null;
+      });
+  }
+
+  return freshIconRequest;
+}
 
 function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: number; y: number }) {
   if (!show || typeof window === 'undefined' || typeof document === 'undefined') return null;
@@ -106,8 +141,12 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
   const [iconState, setIconState] = useState(() => getInitialIconState(link));
   const [iconRetryKey, setIconRetryKey] = useState(0);
   const previousIconSourceRef = useRef(getLinkIconUrl(link));
+  const currentIconSourceRef = useRef(getLinkIconUrl(link));
   const iconRetryCountRef = useRef(0);
   const iconRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const iconRefreshAttemptedRef = useRef(false);
+  const iconRefreshInFlightRef = useRef(false);
+  const mountedRef = useRef(true);
 
   const clearIconRetryTimer = useCallback(() => {
     if (iconRetryTimerRef.current !== null) {
@@ -116,24 +155,67 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
     }
   }, []);
 
-  const handleImageError = useCallback(() => {
-    if (iconState.src === FALLBACK_ICON_SRC || iconRetryTimerRef.current !== null) return;
+  const retryOrFallback = useCallback(() => {
+    if (!mountedRef.current || iconRetryTimerRef.current !== null) return;
 
     const retryDelay = ICON_RETRY_DELAYS[iconRetryCountRef.current];
     if (retryDelay !== undefined) {
       iconRetryCountRef.current += 1;
       iconRetryTimerRef.current = setTimeout(() => {
         iconRetryTimerRef.current = null;
-        setIconRetryKey((key) => key + 1);
+        if (mountedRef.current) setIconRetryKey((key) => key + 1);
       }, retryDelay);
       return;
     }
 
+    currentIconSourceRef.current = FALLBACK_ICON_SRC;
     setIconState((state) => {
       if (state.src === FALLBACK_ICON_SRC) return state;
       return getFailedIconState();
     });
-  }, [iconState.src]);
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    if (
+      currentIconSourceRef.current === FALLBACK_ICON_SRC ||
+      iconRetryTimerRef.current !== null ||
+      iconRefreshInFlightRef.current
+    ) {
+      return;
+    }
+
+    if (!iconRefreshAttemptedRef.current) {
+      iconRefreshAttemptedRef.current = true;
+      iconRefreshInFlightRef.current = true;
+
+      void fetchFreshIconMap()
+        .then((icons) => {
+          if (!mountedRef.current) return;
+
+          const freshIconUrl = icons[link.id];
+          if (freshIconUrl && freshIconUrl !== currentIconSourceRef.current) {
+            clearIconRetryTimer();
+            iconRetryCountRef.current = 0;
+            currentIconSourceRef.current = freshIconUrl;
+            setIconState({ src: freshIconUrl, isLoaded: false });
+            setIconRetryKey((key) => key + 1);
+            return;
+          }
+
+          retryOrFallback();
+        })
+        .catch(() => {
+          if (mountedRef.current) retryOrFallback();
+        })
+        .finally(() => {
+          iconRefreshInFlightRef.current = false;
+        });
+
+      return;
+    }
+
+    retryOrFallback();
+  }, [link.id, clearIconRetryTimer, retryOrFallback]);
 
   const handleImageLoad = useCallback(() => {
     clearIconRetryTimer();
@@ -160,12 +242,21 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
 
     clearIconRetryTimer();
     iconRetryCountRef.current = 0;
+    iconRefreshAttemptedRef.current = false;
+    iconRefreshInFlightRef.current = false;
     setIconRetryKey(0);
     previousIconSourceRef.current = currentSource;
+    currentIconSourceRef.current = currentSource;
     setIconState(getInitialIconState(link));
   }, [link.iconfile, link.iconlink, link, clearIconRetryTimer]);
 
-  useEffect(() => () => clearIconRetryTimer(), [clearIconRetryTimer]);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      clearIconRetryTimer();
+    };
+  }, [clearIconRetryTimer]);
 
   return (
     <>
