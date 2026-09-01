@@ -82,7 +82,7 @@ export default async function RootLayout({
         <Clarity clarityId={config.CLARITY_ID || ''} />
         <GoogleAnalytics gaId={config.GA_ID || ''} />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider>
           {children}
           <Analytics />
