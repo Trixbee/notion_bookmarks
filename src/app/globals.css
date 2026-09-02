@@ -65,7 +65,9 @@
 }
 
 .highlight-section { animation: highlight 1.5s ease-in-out; border-radius: 0.5rem; margin: -0.5rem; padding: 0.5rem; }
-html { scroll-behavior: smooth; scroll-padding-top: 100px; max-width: 100vw; overflow-x: hidden; }
+/* Keep native/history scroll restoration instant. Interactive navigation explicitly
+   requests smooth scrolling in JavaScript, so smooth behavior is scoped to user actions. */
+html { scroll-behavior: auto; scroll-padding-top: 100px; max-width: 100vw; overflow-x: hidden; }
 section { transition: background-color 0.3s ease-out; }
 html, body { max-width: 100vw; overflow-x: hidden; }
 @layer utilities { .animate-fade-in { animation: fadeIn 0.5s ease-out; } }
