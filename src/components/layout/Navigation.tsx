@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState, useEffect, memo, useCallback, useMemo, useRef } from 'react'
+import { ChevronDown, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { getCategoryIcon } from '@/lib/category-icons'
 import { ThemeSwitcher } from '@/components/ui/ThemeSwitcher'
-import * as Icons from 'lucide-react'
 import { WebsiteConfig } from '@/types'
 
 interface Category {
@@ -216,9 +217,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
 
         <ul className="space-y-1 pb-24">
           {categories.map(category => {
-            const IconComponent = category.iconName && category.iconName in Icons
-              ? (Icons[category.iconName as keyof typeof Icons] as React.ComponentType)
-              : Icons.Globe
+            const IconComponent = getCategoryIcon(category.iconName) ?? Globe
             const isCategoryActive = activeCategory === category.id || activeCategory.startsWith(`${category.id}-`)
             const isCategoryExpanded = expandedCategories.has(category.id)
 
@@ -237,7 +236,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
                     )}
                   >
                     <div className="flex items-center space-x-2"><IconComponent className="w-4 h-4" /><span>{category.name}</span></div>
-                    <Icons.ChevronDown className={cn('w-4 h-4 transition-transform', isCategoryExpanded ? 'rotate-180' : '')} />
+                    <ChevronDown className={cn('w-4 h-4 transition-transform', isCategoryExpanded ? 'rotate-180' : '')} />
                   </button>
 
                   {isCategoryExpanded && (
