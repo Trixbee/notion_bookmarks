@@ -1,5 +1,10 @@
-/* Keep cyberpunk visual effects while matching the site's normal content typography. */
+/* Keep cyberpunk visual effects while matching the site's normal content typography.
+ * Cyberpunk's decorative Rajdhani/Orbitron web fonts can arrive after the first paint.
+ * Using them for the whole document changes text metrics during reload and makes the
+ * browser's native scroll restoration visibly adjust/scroll. Keep normal content on
+ * the stable site font; decorative elements such as .neon-title still use cyber fonts. */
 [data-theme="cyberpunk-dark"] {
+  font-family: var(--font-sans) !important;
   font-size: 1rem;
   font-weight: 400;
   letter-spacing: normal;
@@ -8,7 +13,7 @@
 [data-theme="cyberpunk-dark"] .section-heading-title,
 [data-theme="cyberpunk-dark"] .subcategory-heading-title,
 [data-theme="cyberpunk-dark"] .link-card-title {
-  font-family: inherit !important;
+  font-family: var(--font-sans) !important;
   text-transform: none !important;
   letter-spacing: normal !important;
   margin-bottom: 0 !important;
@@ -21,6 +26,11 @@
 [data-theme="cyberpunk-dark"] .subcategory-heading-title,
 [data-theme="cyberpunk-dark"] .link-card-title {
   font-weight: 500 !important;
+}
+
+[data-theme="cyberpunk-dark"] a.group,
+[data-theme="cyberpunk-dark"] a.group p {
+  font-family: var(--font-sans) !important;
 }
 
 [data-theme="cyberpunk-dark"] a.group {
