@@ -10,6 +10,14 @@
   letter-spacing: normal;
 }
 
+/* Native browser scroll restoration should be instant on reload. Navigation clicks
+ * still use window.scrollTo({ behavior: 'smooth' }) explicitly, so click scrolling
+ * remains smooth. This only overrides the global html { scroll-behavior: smooth; }
+ * for the cyberpunk theme, where the heavier paint pipeline makes restoration visible. */
+html[data-theme="cyberpunk-dark"] {
+  scroll-behavior: auto;
+}
+
 [data-theme="cyberpunk-dark"] .section-heading-title,
 [data-theme="cyberpunk-dark"] .subcategory-heading-title,
 [data-theme="cyberpunk-dark"] .link-card-title {
