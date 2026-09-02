@@ -1,7 +1,7 @@
 // src/components/LinkContainer.tsx
 import React from "react";
 import LinkCard from "@/components/ui/LinkCard";
-import * as Icons from "lucide-react";
+import { getCategoryIcon } from '@/lib/category-icons';
 import { Link, Category } from '@/types';
 
 interface LinkContainerProps {
@@ -9,6 +9,8 @@ interface LinkContainerProps {
   enabledCategories: Set<string>;
   categories: Category[];
 }
+
+const EAGER_ICON_COUNT = 10;
 
 const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
   year: 'numeric',
@@ -43,24 +45,27 @@ export default function LinkContainer({
   }
   const latestUpdate = latestTimestamp > 0 ? formatDate(new Date(latestTimestamp)) : null;
 
-  const firstCategoryName = categories[0]?.name;
+  let renderedLinkCount = 0;
 
   return (
     <div className="space-y-16 pb-12 w-full min-w-0">
-      {categories.map((category) => {
+      {categories.map((category, categoryIndex) => {
         const categoryLinks = linksByCategory[category.name];
         if (!categoryLinks) return null;
-        const eagerCategory = category.name === firstCategoryName;
+        const IconComponent = getCategoryIcon(category.iconName);
 
         return (
-          <section key={category.id} id={category.id} className="space-y-8">
+          <section
+            key={category.id}
+            id={category.id}
+            className={categoryIndex === 0
+              ? 'space-y-8'
+              : 'space-y-8 [content-visibility:auto] [contain-intrinsic-size:auto_900px]'}
+          >
             <div className="section-heading flex items-center gap-3 pb-2 border-b">
-              {category.iconName && Icons[category.iconName as keyof typeof Icons] ? (
+              {IconComponent ? (
                 <div className="section-heading-icon w-7 h-7 p-1 rounded-lg bg-primary/5 text-primary">
-                  {React.createElement(
-                    Icons[category.iconName as keyof typeof Icons] as React.ComponentType<{ className: string }>,
-                    { className: "w-5 h-5" }
-                  )}
+                  <IconComponent className="w-5 h-5" />
                 </div>
               ) : null}
               <h2 className="section-heading-title text-2xl font-bold tracking-tight">{category.name}</h2>
@@ -77,14 +82,18 @@ export default function LinkContainer({
                       <div className="text-sm text-muted-foreground">({links.length})</div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
-                      {links.map((link) => (
-                        <LinkCard
-                          key={link.id}
-                          link={link}
-                          className="w-full"
-                          eager={eagerCategory}
-                        />
-                      ))}
+                      {links.map((link) => {
+                        const eager = renderedLinkCount < EAGER_ICON_COUNT;
+                        renderedLinkCount += 1;
+                        return (
+                          <LinkCard
+                            key={link.id}
+                            link={link}
+                            className="w-full"
+                            eager={eager}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 );
