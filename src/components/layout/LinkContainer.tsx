@@ -49,19 +49,13 @@ export default function LinkContainer({
 
   return (
     <div className="space-y-16 pb-12 w-full min-w-0">
-      {categories.map((category, categoryIndex) => {
+      {categories.map((category) => {
         const categoryLinks = linksByCategory[category.name];
         if (!categoryLinks) return null;
         const IconComponent = getCategoryIcon(category.iconName);
 
         return (
-          <section
-            key={category.id}
-            id={category.id}
-            className={categoryIndex === 0
-              ? 'space-y-8'
-              : 'space-y-8 [content-visibility:auto] [contain-intrinsic-size:auto_900px]'}
-          >
+          <section key={category.id} id={category.id} className="space-y-8">
             <div className="section-heading flex items-center gap-3 pb-2 border-b">
               {IconComponent ? (
                 <div className="section-heading-icon w-7 h-7 p-1 rounded-lg bg-primary/5 text-primary">
