@@ -1,7 +1,7 @@
 // src/components/LinkContainer.tsx
 import React from "react";
 import LinkCard from "@/components/ui/LinkCard";
-import { getCategoryIcon } from '@/lib/category-icons';
+import * as Icons from "lucide-react";
 import { Link, Category } from '@/types';
 
 interface LinkContainerProps {
@@ -52,7 +52,9 @@ export default function LinkContainer({
       {categories.map((category) => {
         const categoryLinks = linksByCategory[category.name];
         if (!categoryLinks) return null;
-        const IconComponent = getCategoryIcon(category.iconName);
+        const IconComponent = category.iconName && category.iconName in Icons
+          ? (Icons[category.iconName as keyof typeof Icons] as React.ComponentType<{ className?: string }>)
+          : null;
 
         return (
           <section key={category.id} id={category.id} className="space-y-8">
