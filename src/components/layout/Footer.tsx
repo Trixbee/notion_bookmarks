@@ -13,10 +13,15 @@ interface FooterProps {
 
 const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
   return (
-    <footer className={`fixed bottom-0 left-0 right-0 bg-background border-t py-4 z-10 ${className}`}>
+    <footer
+      className={cn(
+        'relative bg-background border-t py-2.5 lg:fixed lg:bottom-0 lg:left-0 lg:right-0 lg:z-10 lg:py-4',
+        className
+      )}
+    >
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 lg:flex-nowrap lg:justify-between">
+          <div className="flex items-center space-x-3 lg:space-x-4">
             {config.SOCIAL_GITHUB && (
               <a
                 href={config.SOCIAL_GITHUB}
@@ -63,9 +68,7 @@ const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
                   alt="即刻"
                   width={20}
                   height={20}
-                  className={cn(
-                    "filter-muted hover:filter-none transition-all"
-                  )}
+                  className={cn('filter-muted hover:filter-none transition-all')}
                   loading="lazy"
                   decoding="async"
                 />
@@ -95,21 +98,20 @@ const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
                   alt="小红书"
                   width={20}
                   height={20}
-                  className={cn(
-                    "filter-muted hover:filter-none transition-all"
-                  )}
+                  className={cn('filter-muted hover:filter-none transition-all')}
                   loading="lazy"
                   decoding="async"
                 />
               </a>
             )}
           </div>
-          <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
-            <p className="hidden md:block text-sm text-muted-foreground">
+
+          <div className="flex items-center gap-4">
+            <p className="hidden lg:block text-sm text-muted-foreground">
               Built with Next.js and Notion
             </p>
-            <p className="text-sm text-muted-foreground">
-              2026 {config.SITE_AUTHOR}. All rights reserved.
+            <p className="whitespace-nowrap text-xs text-muted-foreground lg:text-sm">
+              © 2026 {config.SITE_AUTHOR}. All rights reserved.
             </p>
           </div>
         </div>
