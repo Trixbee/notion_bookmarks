@@ -109,7 +109,7 @@ const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
           </div>
 
           <p className="whitespace-nowrap text-xs text-muted-foreground lg:text-sm">
-            © {currentYear} Honeycomb Tech
+            © {currentYear} Bee Tech
           </p>
         </div>
       </div>
