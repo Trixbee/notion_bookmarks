@@ -53,7 +53,7 @@ export default async function HomePage() {
 
       {/* 手机顶部：Logo 64 + 一级 48 + 二级 40 = 152px。 */}
       <main className="ml-0 lg:ml-[300px] pt-[152px] lg:pt-4 min-h-screen flex flex-col">
-        <div className="flex-1 w-full min-w-0 overflow-x-hidden px-4 py-4 lg:pt-0 pb-24">
+        <div className="flex-1 w-full min-w-0 overflow-x-hidden px-4 py-4 lg:pt-0 lg:pb-24">
           <LinkContainer
             initialLinks={processedLinks}
             enabledCategories={enabledCategories}
@@ -61,7 +61,7 @@ export default async function HomePage() {
           />
         </div>
       </main>
-      <Footer config={config} className="fixed left-0 right-0 bottom-0 z-30" />
+      <Footer config={config} />
     </div>
   );
 }
