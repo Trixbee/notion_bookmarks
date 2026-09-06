@@ -60,8 +60,9 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
       // Primary headings get 8px extra breathing room; secondary headings align
       // directly below the header to keep the denser hierarchy visually compact.
       const mobileOffset = isSubCategory ? 152 : 160
-      // Desktop has no fixed top bar, so only keep a small level-aware margin.
-      const desktopOffset = isSubCategory ? 24 : 40
+      // Desktop has no fixed top bar. Keep primary headings high and prominent,
+      // while secondary headings sit slightly lower for a more comfortable focus point.
+      const desktopOffset = isSubCategory ? 80 : 40
       const offset = window.innerWidth < 1024 ? mobileOffset : desktopOffset
       window.scrollTo({ top: rect.top + scrollTop - offset, behavior: 'smooth' })
     }
