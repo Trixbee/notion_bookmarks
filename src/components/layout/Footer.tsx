@@ -12,6 +12,8 @@ interface FooterProps {
 }
 
 const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer
       className={cn(
@@ -106,14 +108,9 @@ const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <p className="hidden lg:block text-sm text-muted-foreground">
-              Built with Next.js and Notion
-            </p>
-            <p className="whitespace-nowrap text-xs text-muted-foreground lg:text-sm">
-              © 2026 {config.SITE_AUTHOR}. All rights reserved.
-            </p>
-          </div>
+          <p className="whitespace-nowrap text-xs text-muted-foreground lg:text-sm">
+            © {currentYear} Bee Tech. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
