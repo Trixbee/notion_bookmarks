@@ -56,7 +56,9 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     if (element) {
       const rect = element.getBoundingClientRect()
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      const offset = window.innerWidth < 1024 ? 148 : 100
+      // Mobile header is 152px tall when the secondary navigation is visible.
+      // Keep another 8px of visual breathing room below it for the target heading.
+      const offset = window.innerWidth < 1024 ? 160 : 100
       window.scrollTo({ top: rect.top + scrollTop - offset, behavior: 'smooth' })
     }
   }, [])
