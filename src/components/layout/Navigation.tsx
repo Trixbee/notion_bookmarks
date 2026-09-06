@@ -50,15 +50,17 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
     })
   }, [])
 
-  const scrollToElement = useCallback((elementId: string) => {
+  const scrollToElement = useCallback((elementId: string, isSubCategory = false) => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return
     const element = document.getElementById(elementId)
     if (element) {
       const rect = element.getBoundingClientRect()
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-      // Mobile header is 152px tall when the secondary navigation is visible.
-      // Keep another 8px of visual breathing room below it for the target heading.
-      const offset = window.innerWidth < 1024 ? 160 : 100
+      // Mobile header is 152px tall with the secondary navigation visible.
+      // Primary headings get 8px extra breathing room; secondary headings align
+      // directly below the header to keep the denser hierarchy visually compact.
+      const mobileOffset = isSubCategory ? 152 : 160
+      const offset = window.innerWidth < 1024 ? mobileOffset : 100
       window.scrollTo({ top: rect.top + scrollTop - offset, behavior: 'smooth' })
     }
   }, [])
@@ -66,7 +68,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
   const handleNavClick = useCallback((categoryId: string, subCategoryId?: string) => {
     const elementId = subCategoryId ? `${categoryId}-${subCategoryId}` : categoryId
     setActiveCategory(elementId)
-    scrollToElement(elementId)
+    scrollToElement(elementId, Boolean(subCategoryId))
   }, [scrollToElement])
 
   const handleMobileCategoryClick = useCallback((categoryId: string) => {
