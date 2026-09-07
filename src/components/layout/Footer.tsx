@@ -17,7 +17,7 @@ const Footer = memo(function Footer({ config, className = "" }: FooterProps) {
   return (
     <footer
       className={cn(
-        'relative bg-background border-t py-2.5 lg:fixed lg:bottom-0 lg:left-[300px] lg:right-0 lg:z-10 lg:py-4',
+        'relative bg-background border-t py-2.5 lg:fixed lg:bottom-0 lg:left-0 lg:right-0 lg:z-30 lg:py-4',
         className
       )}
     >
