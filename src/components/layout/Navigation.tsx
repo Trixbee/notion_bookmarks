@@ -212,7 +212,7 @@ const Navigation = memo(function Navigation({ categories, config = defaultConfig
         )}
       </nav>
 
-      <nav className="desktop-sidebar hidden lg:block fixed left-0 top-0 w-[280px] h-screen z-20 p-4 overflow-y-auto border-r">
+      <nav className="desktop-sidebar hidden lg:block fixed left-0 top-0 w-[280px] h-screen z-20 p-4 overflow-y-auto border-r bg-background">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
             <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain" />
