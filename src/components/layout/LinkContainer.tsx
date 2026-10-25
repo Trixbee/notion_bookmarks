@@ -11,6 +11,7 @@ interface LinkContainerProps {
 }
 
 const EAGER_ICON_COUNT = 10;
+const HIGH_PRIORITY_ICON_COUNT = 3;
 
 const formatDate = (date: Date) => date.toLocaleString('zh-CN', {
   year: 'numeric',
@@ -80,6 +81,7 @@ export default function LinkContainer({
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 w-full">
                       {links.map((link) => {
                         const eager = renderedLinkCount < EAGER_ICON_COUNT;
+                        const priority = renderedLinkCount < HIGH_PRIORITY_ICON_COUNT;
                         renderedLinkCount += 1;
                         return (
                           <LinkCard
@@ -87,6 +89,7 @@ export default function LinkContainer({
                             link={link}
                             className="w-full"
                             eager={eager}
+                            priority={priority}
                           />
                         );
                       })}
