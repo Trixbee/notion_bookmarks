@@ -17,6 +17,7 @@ interface LinkCardProps {
   link: Link;
   className?: string;
   eager?: boolean;
+  priority?: boolean;
 }
 
 const ICON_RETRY_DELAYS = [1000, 2000] as const;
@@ -74,6 +75,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   src,
   alt,
   eager,
+  priority,
   loaded,
   retryKey,
   onLoad,
@@ -82,6 +84,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   src: string;
   alt: string;
   eager: boolean;
+  priority: boolean;
   loaded: boolean;
   retryKey: number;
   onLoad?: () => void;
@@ -122,7 +125,7 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
         onError={onError}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
-        fetchPriority="auto"
+        fetchPriority={priority ? "high" : "auto"}
         referrerPolicy="no-referrer"
       />
     </>
@@ -131,11 +134,12 @@ const OptimisedLinkIcon = memo(function OptimisedLinkIcon({
   prev.src === next.src &&
   prev.alt === next.alt &&
   prev.eager === next.eager &&
+  prev.priority === next.priority &&
   prev.loaded === next.loaded &&
   prev.retryKey === next.retryKey
 ));
 
-const LinkCard = memo(function LinkCard({ link, className, eager = false }: LinkCardProps) {
+const LinkCard = memo(function LinkCard({ link, className, eager = false, priority = false }: LinkCardProps) {
   const [titleTooltip, setTitleTooltip] = useState({ show: false, x: 0, y: 0 });
   const [descTooltip, setDescTooltip] = useState({ show: false, x: 0, y: 0 });
   const [iconState, setIconState] = useState(() => getInitialIconState(link));
@@ -279,6 +283,7 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
                   src={iconState.src}
                   alt={link.name}
                   eager={eager}
+                  priority={priority}
                   loaded={iconState.isLoaded}
                   retryKey={iconRetryKey}
                   onLoad={handleImageLoad}
@@ -338,6 +343,7 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false }: Link
     prevTags.length === nextTags.length &&
     prevTags.every((tag, index) => tag === nextTags[index]) &&
     prev.eager === next.eager &&
+    prev.priority === next.priority &&
     prev.className === next.className
   );
 });
