@@ -23,38 +23,29 @@ interface LinkCardProps {
 const ICON_RETRY_DELAYS = [1000, 2000] as const;
 const FRESH_ICON_CACHE_MS = 30_000;
 
-type FreshIconMap = Record<string, string>;
+const freshIconRequests = new Map<string, Promise<string>>();
+const freshIconCache = new Map<string, { url: string; expiresAt: number }>();
 
-let freshIconRequest: Promise<FreshIconMap> | null = null;
-let freshIconCache: { icons: FreshIconMap; expiresAt: number } | null = null;
+async function fetchFreshIconUrl(id: string): Promise<string> {
+  const cached = freshIconCache.get(id);
+  if (cached && cached.expiresAt > Date.now()) return cached.url;
 
-async function fetchFreshIconMap(): Promise<FreshIconMap> {
-  const now = Date.now();
-  if (freshIconCache && freshIconCache.expiresAt > now) {
-    return freshIconCache.icons;
-  }
+  const existing = freshIconRequests.get(id);
+  if (existing) return existing;
 
-  if (!freshIconRequest) {
-    freshIconRequest = fetch('/api/icons', { cache: 'no-store' })
-      .then(async (response) => {
-        if (!response.ok) {
-          throw new Error(`Icon refresh failed with ${response.status}`);
-        }
+  const request = fetch(`/api/icons?id=${encodeURIComponent(id)}`, { cache: 'no-store' })
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`Icon refresh failed with ${response.status}`);
+      const payload = await response.json() as { url?: string };
+      const url = payload.url || '';
+      if (freshIconCache.size >= 500) freshIconCache.delete(freshIconCache.keys().next().value!);
+      freshIconCache.set(id, { url, expiresAt: Date.now() + FRESH_ICON_CACHE_MS });
+      return url;
+    })
+    .finally(() => freshIconRequests.delete(id));
 
-        const payload = await response.json() as { icons?: FreshIconMap };
-        const icons = payload.icons ?? {};
-        freshIconCache = {
-          icons,
-          expiresAt: Date.now() + FRESH_ICON_CACHE_MS,
-        };
-        return icons;
-      })
-      .finally(() => {
-        freshIconRequest = null;
-      });
-  }
-
-  return freshIconRequest;
+  freshIconRequests.set(id, request);
+  return request;
 }
 
 function Tooltip({ content, show, x, y }: { content: string; show: boolean; x: number; y: number }) {
@@ -192,11 +183,10 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false, priori
       iconRefreshAttemptedRef.current = true;
       iconRefreshInFlightRef.current = true;
 
-      void fetchFreshIconMap()
-        .then((icons) => {
+      void fetchFreshIconUrl(link.id)
+        .then((freshIconUrl) => {
           if (!mountedRef.current) return;
 
-          const freshIconUrl = icons[link.id];
           if (freshIconUrl && freshIconUrl !== currentIconSourceRef.current) {
             clearIconRetryTimer();
             iconRetryCountRef.current = 0;
