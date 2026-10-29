@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { notion } from '@/lib/notion';
 import { isNotionLinkPage, toLink } from '@/types';
+import { getIconUrlExpiry, isIconUrlExpired } from '@/lib/link-icon';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,7 +15,7 @@ const inFlight = new Map<string, Promise<string>>();
 
 async function fetchIcon(pageId: string): Promise<string> {
   const cached = iconCache.get(pageId);
-  if (cached && cached.expiresAt > Date.now()) return cached.url;
+  if (cached && cached.expiresAt > Date.now() && !isIconUrlExpired(cached.url)) return cached.url;
 
   const existing = inFlight.get(pageId);
   if (existing) return existing;
@@ -26,7 +27,10 @@ async function fetchIcon(pageId: string): Promise<string> {
     const link = toLink(page);
     const url = link.iconfile || link.iconlink || '';
     if (iconCache.size >= MAX_CACHE_ENTRIES) iconCache.delete(iconCache.keys().next().value!);
-    iconCache.set(pageId, { url, expiresAt: Date.now() + SERVER_ICON_CACHE_MS });
+    const expiry = getIconUrlExpiry(url);
+    if (url && !isIconUrlExpired(url)) {
+      iconCache.set(pageId, { url, expiresAt: Math.min(Date.now() + SERVER_ICON_CACHE_MS, expiry ?? Infinity) });
+    }
     return url;
   })().finally(() => inFlight.delete(pageId));
 
