@@ -26,3 +26,35 @@ export function getLoadedIconState(state: IconLoadState): IconLoadState {
 export function getFailedIconState(): IconLoadState {
   return { src: FALLBACK_ICON_SRC, isLoaded: true };
 }
+
+/** Returns a known signed URL expiry, or null for ordinary image URLs. */
+export function getIconUrlExpiry(url: string): number | null {
+  try {
+    const parsed = new URL(url);
+    const params = parsed.searchParams;
+    const awsDate = params.get('X-Amz-Date');
+    const awsExpires = params.get('X-Amz-Expires');
+    if (awsDate && awsExpires && /^\d{8}T\d{6}Z$/.test(awsDate)) {
+      const issued = Date.UTC(
+        Number(awsDate.slice(0, 4)), Number(awsDate.slice(4, 6)) - 1,
+        Number(awsDate.slice(6, 8)), Number(awsDate.slice(9, 11)),
+        Number(awsDate.slice(11, 13)), Number(awsDate.slice(13, 15))
+      );
+      const seconds = Number(awsExpires);
+      if (Number.isFinite(seconds) && seconds >= 0) return issued + seconds * 1000;
+    }
+    const expires = params.get('Expires');
+    if (expires && /^\d+$/.test(expires)) {
+      const value = Number(expires);
+      if (Number.isFinite(value)) return value * 1000;
+    }
+  } catch {
+    // Relative or malformed URLs are treated as ordinary URLs.
+  }
+  return null;
+}
+
+export function isIconUrlExpired(url: string, marginMs = 30_000): boolean {
+  const expiry = getIconUrlExpiry(url);
+  return expiry !== null && expiry <= Date.now() + marginMs;
+}
