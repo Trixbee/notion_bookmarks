@@ -11,6 +11,8 @@ import {
   getInitialIconState,
   getLinkIconUrl,
   getLoadedIconState,
+  getIconUrlExpiry,
+  isIconUrlExpired,
 } from '@/lib/link-icon';
 
 interface LinkCardProps {
@@ -28,7 +30,7 @@ const freshIconCache = new Map<string, { url: string; expiresAt: number }>();
 
 async function fetchFreshIconUrl(id: string): Promise<string> {
   const cached = freshIconCache.get(id);
-  if (cached && cached.expiresAt > Date.now()) return cached.url;
+  if (cached && cached.expiresAt > Date.now() && !isIconUrlExpired(cached.url)) return cached.url;
 
   const existing = freshIconRequests.get(id);
   if (existing) return existing;
@@ -39,7 +41,10 @@ async function fetchFreshIconUrl(id: string): Promise<string> {
       const payload = await response.json() as { url?: string };
       const url = payload.url || '';
       if (freshIconCache.size >= 500) freshIconCache.delete(freshIconCache.keys().next().value!);
-      freshIconCache.set(id, { url, expiresAt: Date.now() + FRESH_ICON_CACHE_MS });
+      const expiry = getIconUrlExpiry(url);
+      if (url && !isIconUrlExpired(url)) {
+        freshIconCache.set(id, { url, expiresAt: Math.min(Date.now() + FRESH_ICON_CACHE_MS, expiry ?? Infinity) });
+      }
       return url;
     })
     .finally(() => freshIconRequests.delete(id));
@@ -153,7 +158,9 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false, priori
   const retryOrFallback = useCallback(() => {
     if (!mountedRef.current || iconRetryTimerRef.current !== null) return;
 
-    const retryDelay = ICON_RETRY_DELAYS[iconRetryCountRef.current];
+    const retryDelay = isIconUrlExpired(currentIconSourceRef.current)
+      ? undefined
+      : ICON_RETRY_DELAYS[iconRetryCountRef.current];
     if (retryDelay !== undefined) {
       iconRetryCountRef.current += 1;
       iconRetryTimerRef.current = setTimeout(() => {
@@ -187,7 +194,7 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false, priori
         .then((freshIconUrl) => {
           if (!mountedRef.current) return;
 
-          if (freshIconUrl && freshIconUrl !== currentIconSourceRef.current) {
+          if (freshIconUrl && !isIconUrlExpired(freshIconUrl) && freshIconUrl !== currentIconSourceRef.current) {
             clearIconRetryTimer();
             iconRetryCountRef.current = 0;
             currentIconSourceRef.current = freshIconUrl;
@@ -243,6 +250,11 @@ const LinkCard = memo(function LinkCard({ link, className, eager = false, priori
     currentIconSourceRef.current = currentSource;
     setIconState(getInitialIconState(link));
   }, [link.iconfile, link.iconlink, link, clearIconRetryTimer]);
+
+  // Skip a guaranteed-failing image request when a Notion signature is already expired.
+  useEffect(() => {
+    if (isIconUrlExpired(currentIconSourceRef.current)) handleImageError();
+  }, [iconState.src, handleImageError]);
 
   useEffect(() => {
     mountedRef.current = true;
